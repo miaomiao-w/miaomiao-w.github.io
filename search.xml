@@ -752,86 +752,6 @@
       </tags>
   </entry>
   <entry>
-    <title>地面分割算法（二）：Ground_removal in LeGO-LOAM</title>
-    <url>/2023/06/30/2023-06-30-segmentation-02/</url>
-    <content><![CDATA[<p>paper: <a href="https://ieeexplore.ieee.org/abstract/document/8594299">LeGO-LOAM: Lightweight and Ground-Optimized Lidar Odometry and Mapping on Variable Terrain</a></p>
-<p>Github: <a href="https://github.com/RobustFieldAutonomyLab/LeGO-LOAM">LeGO-LOAM - (RobustFieldAutonomyLab)</a></p>
-<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h2><p>在LeGO-LOAM中，Ground removal 部分引用了上文 <a href="https://miaomiao-w.github.io/posts/segmentation-01/">地面分割算法（一）：linefit_ground_segmentation</a> 中介绍的论文 <a href="https://ieeexplore.ieee.org/document/5548059/figures#figures">Fast segmentation of 3D point clouds for ground vehicles</a>，但只是用了其中考虑地面坡度的思想，具体的代码实现有非常大的区别，包括点云的结构化方式和具体的地面滤除实施，并且代码非常的简化精炼。</p>
-<p>Ground removal 部分的核心代码位于 LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp 文件中。 主要有两部分：点云结构化 <code>projectPointCloud()</code> 和地面滤除 <code>groundRemoval()</code>。</p>
-<h2 id="2-点云结构化"><a href="#2-点云结构化" class="headerlink" title="2 点云结构化"></a>2 点云结构化</h2><ul>
-<li><strong>主要原理</strong></li>
-</ul>
-<p>根据每个点的水平角度和垂直角度，再预先设置两个方向的角度分辨率，可计算得到每个点在这两个方向上的索引，将点云重新映射为基于图像的组织方式。</p>
-<p>核心代码所在：<code>LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</code></p>
-<ul>
-<li><strong>角度分辨率的设置</strong></li>
-</ul>
-<p>可以参考激光雷达设备手册上的参数，一般都有关于激光点云在水平和垂直两个方向上的角度分辨率，可直接将其作为我们需要的阈值，这样可以最大程度保证每个点都能有效利用。事实上，也可以通过这两个阈值的设置（给定一个更大的值，如2倍于设备本身的角度分辨率），在点云映射的同时达到降采样的目的，这个可以根据实际需求。</p>
-<p>源码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_x = <span class="number">0.2</span>; <span class="comment">// degree</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_y = <span class="number">2.0</span>;</span><br></pre></td></tr></table></figure>
-
-
-
-<ul>
-<li><strong>计算水平角和垂直角</strong></li>
-</ul>
-<p>直接基于点坐标计算即可。垂直角$\theta_{v}$ ，水平角$\theta_{h}$ 。<br>$$<br>{\theta_{v}}<em>i&#x3D;\arctan{(\frac{z_i}{\sqrt{x_i^2+y_i^2}})} \\<br>{\theta</em>{h}}_i&#x3D;\arctan{(\frac{x_i}{y_i})}<br>$$<br>注：以上水平角公式是LeGO-LOAM中的计算方法，这个与坐标系定义和水平角起始方向选取有关。这里是以激光雷达坐标系的y轴正方向为0。这里用 $\arctan{(\frac{x_i}{y_i})}$ 还是 $\arctan{(\frac{y_i}{x_i})}$ 来计算依据实际需求而定。</p>
-<p>源码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line"><span class="type">float</span> distance = <span class="built_in">sqrt</span>(thisPoint.x * thisPoint.x + thisPoint.y * thisPoint.y);</span><br><span class="line">verticalAngle = <span class="built_in">atan2</span>(thisPoint.z, distance) * <span class="number">180</span> / M_PI;</span><br><span class="line">horizonAngle = <span class="built_in">atan2</span>(thisPoint.x, thisPoint.y) * <span class="number">180</span> / M_PI;</span><br></pre></td></tr></table></figure>
-
-
-
-
-<ul>
-<li><strong>计算激光点在图像上的坐标</strong></li>
-</ul>
-<p>这个坐标也就是上述【主要原理】中所讲的索引值。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line">rowIdn = (verticalAngle + ang_bottom) / ang_res_y;</span><br><span class="line">columnIdn = -<span class="built_in">round</span>((horizonAngle<span class="number">-90.0</span>)/ang_res_x) + Horizon_SCAN/<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-
-<p>这里的 <code>ang_bottom</code> 的引入和<code>-90.0</code>、<code>+ Horizon_SCAN/2</code> 都是为了将索引值转化为大于等于0的正整数，以符合图像中坐标的定义，也正是其所谓索引。</p>
-<p>特别地，如果是机械雷达，<code>rowIdn</code> 其实就是 <code>ring</code>，可以免去这部分的计算，直接将 <code>ring</code> 值赋给 <code>rowIdn</code> 即可。</p>
-<ul>
-<li><strong>举例说明</strong></li>
-</ul>
-<p>以机械雷达为例：</p>
-<p>图像行：每一线激光点就是图像中的一行点，并且图像中的任意一行的首尾其实也是相邻的，这点在后续的点云聚类中有体现（不在此文的地面点云分割范围）；</p>
-<p>图像列：下图中两圈表示机械雷达的两线点云，红框中是同一个方向的分属于两线的两个点，映射到图像中就是同一列中相邻的两个像素点。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png" alt="image-20230701184940252"></p>
-<h2 id="3-地面滤除"><a href="#3-地面滤除" class="headerlink" title="3 地面滤除"></a>3 地面滤除</h2><p>LeGO-LOAM中地面滤除算法非常简单。</p>
-<p>从靠近激光雷达的点开始判断。对于任意当前一点，再取出下一点（下一行中同一列的激光点），计算这两个点形成的坡度大小，再依据给定的坡度阈值（文中取值为10度），判断其是否为地面点。</p>
-<p>激光点是有可能有无效点的，没有收到回波的点一般存为Nan点，那么如果当前或者下一点是无效点，这个坡度值就没办法计算了，那么当前点就标记为 -1；</p>
-<p>对于正常的两个点，如果计算坡度小于阈值，则两点同为地面点，标记为 1；</p>
-<p>如果计算坡度大于阈值，则两点均为非地面点，标记为 0。</p>
-<p>结束了，就这么简单。</p>
-<p>可能会有人要问了，那如果是一个障碍物目标，它的上表面比较平整，不是就被误判为地面点了吗？</p>
-<p>是这样，肯定是有这个的概率的。但是本文的地面分割是为了更好地做后续的特征匹配的工作，这里不是为了做障碍物识别，所以这一点误判影响并不大；并且，这些误判点不一定会被识别为特征点，可以说又降低了其影响；再者，论文中的实验大多是周围是植被的环境，且安装位置也比较低，不太容易出现上面所说的这种情况。</p>
-<p>所以要注意，如果是用于自动驾驶的避障中，可能要多关注这个问题。特别是安装在巴士顶部的激光雷达，能够看到前车的顶部，特别是挂车后的拖挂平板这种，可能就漏掉了。这是需要注意的。</p>
-<h2 id="4-点云的代码结构"><a href="#4-点云的代码结构" class="headerlink" title="4 点云的代码结构"></a>4 点云的代码结构</h2><p>这部分的代码组织个人感觉还是很好的，可以借鉴参考。</p>
-<p>首先根据两个方向的视场角和角度分辨率，可以得到图像的大小。这个size一般事先计算当做参数输入。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> N_SCAN = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> Horizon_SCAN = <span class="number">1800</span>;</span><br></pre></td></tr></table></figure>
-
-<p>这里用了三个变量来存储结构化的点云，rangeMat，groundMat，fullCloud</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">cv::Mat rangeMat; <span class="comment">// range matrix for range image</span></span><br><span class="line">cv::Mat groundMat; <span class="comment">// ground matrix for ground cloud marking</span></span><br><span class="line">rangeMat  = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_32F, cv::Scalar::<span class="built_in">all</span>(FLT_MAX));</span><br><span class="line">groundMat = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_8S, cv::Scalar::<span class="built_in">all</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// projected velodyne raw cloud, but saved in the form of 1-D matrix</span></span><br><span class="line">pcl::PointCloud&lt;PointType&gt;::Ptr fullCloud; </span><br><span class="line">fullCloud-&gt;points.<span class="built_in">resize</span>(N_SCAN*Horizon_SCAN);</span><br><span class="line">std::<span class="built_in">fill</span>(fullCloud-&gt;points.<span class="built_in">begin</span>(), fullCloud-&gt;points.<span class="built_in">end</span>(), nanPoint);</span><br></pre></td></tr></table></figure>
-
-<p><code>rangeMat、groundMat</code> 为图像形式，分别存储距离值和是否地面点的标签。<code>fullCloud</code> 为 <code>pcl</code> 的点云格式，并且与图像格式一一对应，<code>fullCloud</code> 中 <code>index</code> 为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// rowIdn       : point index of image row</span></span><br><span class="line"><span class="comment">/// columnIdn    : point index of image column</span></span><br><span class="line"><span class="comment">/// Horizon_SCAN : size of each image row</span></span><br><span class="line">index = columnIdn  + rowIdn * Horizon_SCAN;</span><br></pre></td></tr></table></figure>
-
-<p>如此对应，便于点云组织以及后续算法调用。</p>
-<p>以下是论文中特征提取的过程。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png" alt="image-20230701232141293"></p>
-]]></content>
-      <categories>
-        <category>激光雷达</category>
-        <category>lidar算法</category>
-        <category>地面分割</category>
-      </categories>
-      <tags>
-        <tag>lidar</tag>
-        <tag>地面分割</tag>
-        <tag>segmentation</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>LIOSAM 工程是怎么跑起来的</title>
     <url>/2023/07/06/2023-07-06-liosam-mapOpt-01/</url>
     <content><![CDATA[<p>liosam 工程是怎么跑起来的</p>
@@ -916,5 +836,162 @@
         <tag>LIOSAM</tag>
         <tag>后端优化</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>地面分割算法（二）：Ground_removal in LeGO-LOAM</title>
+    <url>/2023/06/30/2023-06-30-segmentation-02/</url>
+    <content><![CDATA[<p>paper: <a href="https://ieeexplore.ieee.org/abstract/document/8594299">LeGO-LOAM: Lightweight and Ground-Optimized Lidar Odometry and Mapping on Variable Terrain</a></p>
+<p>Github: <a href="https://github.com/RobustFieldAutonomyLab/LeGO-LOAM">LeGO-LOAM - (RobustFieldAutonomyLab)</a></p>
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h2><p>在LeGO-LOAM中，Ground removal 部分引用了上文 <a href="https://miaomiao-w.github.io/posts/segmentation-01/">地面分割算法（一）：linefit_ground_segmentation</a> 中介绍的论文 <a href="https://ieeexplore.ieee.org/document/5548059/figures#figures">Fast segmentation of 3D point clouds for ground vehicles</a>，但只是用了其中考虑地面坡度的思想，具体的代码实现有非常大的区别，包括点云的结构化方式和具体的地面滤除实施，并且代码非常的简化精炼。</p>
+<p>Ground removal 部分的核心代码位于 LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp 文件中。 主要有两部分：点云结构化 <code>projectPointCloud()</code> 和地面滤除 <code>groundRemoval()</code>。</p>
+<h2 id="2-点云结构化"><a href="#2-点云结构化" class="headerlink" title="2 点云结构化"></a>2 点云结构化</h2><ul>
+<li><strong>主要原理</strong></li>
+</ul>
+<p>根据每个点的水平角度和垂直角度，再预先设置两个方向的角度分辨率，可计算得到每个点在这两个方向上的索引，将点云重新映射为基于图像的组织方式。</p>
+<p>核心代码所在：<code>LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</code></p>
+<ul>
+<li><strong>角度分辨率的设置</strong></li>
+</ul>
+<p>可以参考激光雷达设备手册上的参数，一般都有关于激光点云在水平和垂直两个方向上的角度分辨率，可直接将其作为我们需要的阈值，这样可以最大程度保证每个点都能有效利用。事实上，也可以通过这两个阈值的设置（给定一个更大的值，如2倍于设备本身的角度分辨率），在点云映射的同时达到降采样的目的，这个可以根据实际需求。</p>
+<p>源码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_x = <span class="number">0.2</span>; <span class="comment">// degree</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_y = <span class="number">2.0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>计算水平角和垂直角</strong></li>
+</ul>
+<p>直接基于点坐标计算即可。垂直角$\theta_{v}$ ，水平角$\theta_{h}$ 。<br>$$<br>{\theta_{v}}<em>i&#x3D;\arctan{(\frac{z_i}{\sqrt{x_i^2+y_i^2}})} \\<br>{\theta</em>{h}}_i&#x3D;\arctan{(\frac{x_i}{y_i})}<br>$$<br>注：以上水平角公式是LeGO-LOAM中的计算方法，这个与坐标系定义和水平角起始方向选取有关。这里是以激光雷达坐标系的y轴正方向为0。这里用 $\arctan{(\frac{x_i}{y_i})}$ 还是 $\arctan{(\frac{y_i}{x_i})}$ 来计算依据实际需求而定。</p>
+<p>源码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line"><span class="type">float</span> distance = <span class="built_in">sqrt</span>(thisPoint.x * thisPoint.x + thisPoint.y * thisPoint.y);</span><br><span class="line">verticalAngle = <span class="built_in">atan2</span>(thisPoint.z, distance) * <span class="number">180</span> / M_PI;</span><br><span class="line">horizonAngle = <span class="built_in">atan2</span>(thisPoint.x, thisPoint.y) * <span class="number">180</span> / M_PI;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<ul>
+<li><strong>计算激光点在图像上的坐标</strong></li>
+</ul>
+<p>这个坐标也就是上述【主要原理】中所讲的索引值。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line">rowIdn = (verticalAngle + ang_bottom) / ang_res_y;</span><br><span class="line">columnIdn = -<span class="built_in">round</span>((horizonAngle<span class="number">-90.0</span>)/ang_res_x) + Horizon_SCAN/<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>ang_bottom</code> 的引入和<code>-90.0</code>、<code>+ Horizon_SCAN/2</code> 都是为了将索引值转化为大于等于0的正整数，以符合图像中坐标的定义，也正是其所谓索引。</p>
+<p>特别地，如果是机械雷达，<code>rowIdn</code> 其实就是 <code>ring</code>，可以免去这部分的计算，直接将 <code>ring</code> 值赋给 <code>rowIdn</code> 即可。</p>
+<ul>
+<li><strong>举例说明</strong></li>
+</ul>
+<p>以机械雷达为例：</p>
+<p>图像行：每一线激光点就是图像中的一行点，并且图像中的任意一行的首尾其实也是相邻的，这点在后续的点云聚类中有体现（不在此文的地面点云分割范围）；</p>
+<p>图像列：下图中两圈表示机械雷达的两线点云，红框中是同一个方向的分属于两线的两个点，映射到图像中就是同一列中相邻的两个像素点。</p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png" alt="image-20230701184940252"></p>
+<h2 id="3-地面滤除"><a href="#3-地面滤除" class="headerlink" title="3 地面滤除"></a>3 地面滤除</h2><p>LeGO-LOAM中地面滤除算法非常简单。</p>
+<p>从靠近激光雷达的点开始判断。对于任意当前一点，再取出下一点（下一行中同一列的激光点），计算这两个点形成的坡度大小，再依据给定的坡度阈值（文中取值为10度），判断其是否为地面点。</p>
+<p>激光点是有可能有无效点的，没有收到回波的点一般存为Nan点，那么如果当前或者下一点是无效点，这个坡度值就没办法计算了，那么当前点就标记为 -1；</p>
+<p>对于正常的两个点，如果计算坡度小于阈值，则两点同为地面点，标记为 1；</p>
+<p>如果计算坡度大于阈值，则两点均为非地面点，标记为 0。</p>
+<p>结束了，就这么简单。</p>
+<p>可能会有人要问了，那如果是一个障碍物目标，它的上表面比较平整，不是就被误判为地面点了吗？</p>
+<p>是这样，肯定是有这个的概率的。但是本文的地面分割是为了更好地做后续的特征匹配的工作，这里不是为了做障碍物识别，所以这一点误判影响并不大；并且，这些误判点不一定会被识别为特征点，可以说又降低了其影响；再者，论文中的实验大多是周围是植被的环境，且安装位置也比较低，不太容易出现上面所说的这种情况。</p>
+<p>所以要注意，如果是用于自动驾驶的避障中，可能要多关注这个问题。特别是安装在巴士顶部的激光雷达，能够看到前车的顶部，特别是挂车后的拖挂平板这种，可能就漏掉了。这是需要注意的。</p>
+<h2 id="4-点云的代码结构"><a href="#4-点云的代码结构" class="headerlink" title="4 点云的代码结构"></a>4 点云的代码结构</h2><p>这部分的代码组织个人感觉还是很好的，可以借鉴参考。</p>
+<p>首先根据两个方向的视场角和角度分辨率，可以得到图像的大小。这个size一般事先计算当做参数输入。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> N_SCAN = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> Horizon_SCAN = <span class="number">1800</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里用了三个变量来存储结构化的点云，rangeMat，groundMat，fullCloud</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">cv::Mat rangeMat; <span class="comment">// range matrix for range image</span></span><br><span class="line">cv::Mat groundMat; <span class="comment">// ground matrix for ground cloud marking</span></span><br><span class="line">rangeMat  = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_32F, cv::Scalar::<span class="built_in">all</span>(FLT_MAX));</span><br><span class="line">groundMat = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_8S, cv::Scalar::<span class="built_in">all</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// projected velodyne raw cloud, but saved in the form of 1-D matrix</span></span><br><span class="line">pcl::PointCloud&lt;PointType&gt;::Ptr fullCloud; </span><br><span class="line">fullCloud-&gt;points.<span class="built_in">resize</span>(N_SCAN*Horizon_SCAN);</span><br><span class="line">std::<span class="built_in">fill</span>(fullCloud-&gt;points.<span class="built_in">begin</span>(), fullCloud-&gt;points.<span class="built_in">end</span>(), nanPoint);</span><br></pre></td></tr></table></figure>
+
+<p><code>rangeMat、groundMat</code> 为图像形式，分别存储距离值和是否地面点的标签。<code>fullCloud</code> 为 <code>pcl</code> 的点云格式，并且与图像格式一一对应，<code>fullCloud</code> 中 <code>index</code> 为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// rowIdn       : point index of image row</span></span><br><span class="line"><span class="comment">/// columnIdn    : point index of image column</span></span><br><span class="line"><span class="comment">/// Horizon_SCAN : size of each image row</span></span><br><span class="line">index = columnIdn  + rowIdn * Horizon_SCAN;</span><br></pre></td></tr></table></figure>
+
+<p>如此对应，便于点云组织以及后续算法调用。</p>
+<p>以下是论文中特征提取的过程。</p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png" alt="image-20230701232141293"></p>
+]]></content>
+      <categories>
+        <category>激光雷达</category>
+        <category>lidar算法</category>
+        <category>地面分割</category>
+      </categories>
+      <tags>
+        <tag>lidar</tag>
+        <tag>地面分割</tag>
+        <tag>segmentation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2023/07/09/liosam%20%E5%B7%A5%E7%A8%8B%E6%98%AF%E6%80%8E%E4%B9%88%E8%B7%91%E8%B5%B7%E6%9D%A5%E7%9A%84/</url>
+    <content><![CDATA[<p>liosam 工程是怎么跑起来的</p>
+<p>LIOSAM 的中 Topic 与 node 的关联图，咋一看非常之多，十分骇人，但是从捋出重要 Topic 之后，就简练的多了，关注以下这些：</p>
+<p>&#x2F;lio_sam&#x2F;mapping&#x2F;odometry_incremental：节点 </p>
+<p>rosgraph-more-topics</p>
+<p>rosgraph-less-topics</p>
+<h2 id="后端优化中雷达位姿的初值获取"><a href="#后端优化中雷达位姿的初值获取" class="headerlink" title="后端优化中雷达位姿的初值获取"></a>后端优化中雷达位姿的初值获取</h2><p>LIOSAM 中的 lidar_link 其实也就是base_link，它与机器人场景中的机器人、自动驾驶场景的车辆是类似的。</p>
+<p>在优化问题中，一个好的初值是非常重要的。LIOSAM在启动过程中，不同的状态下位姿初值获取选用了不同的方案。</p>
+<h3 id="第一帧"><a href="#第一帧" class="headerlink" title="第一帧"></a>第一帧</h3><p>当接收到第一帧点云，将IMU原始数据中的角度值作为初始姿态，位置直接用（0，0，0）。位姿初始化在文件 <code>mapOptmization.cpp</code> 中， ， 代码如下，</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">updateInitialGuess</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">    <span class="type">static</span> Eigen::Affine3f lastImuTransformation;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    <span class="keyword">if</span> (cloudKeyPoses3D-&gt;points.<span class="built_in">empty</span>())<span class="comment">// lidar trajectory</span></span><br><span class="line">    &#123;</span><br><span class="line">        transformTobeMapped[<span class="number">0</span>] = cloudInfo.imuRollInit;<span class="comment">// 时间早于 point_cloud, 且最接近一帧的 imu 数据中的RPY</span></span><br><span class="line">        transformTobeMapped[<span class="number">1</span>] = cloudInfo.imuPitchInit;</span><br><span class="line">        transformTobeMapped[<span class="number">2</span>] = cloudInfo.imuYawInit;</span><br><span class="line">        <span class="keyword">if</span> (!useImuHeadingInitialization)</span><br><span class="line">            transformTobeMapped[<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        lastImuTransformation = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); <span class="comment">// save imu before return;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述 updateInitialGuess() 函数中：</p>
+<p>位姿保存在变量 transformTobeMapped[] 中，且只对角度赋值，位置值保留变量的初始化值；代码如下；</p>
+<p>角度的赋初值：cloudInfo.imuRollInit &#x2F; imuPitchInit &#x2F; imuYawInit 的获取在文件 imageProjection.cpp 中，存于消息 cloud_info 中与其他消息一并发布；代码如下；</p>
+<p>另还有两个参数 incrementalOdometryAffineFront 和 lastImuTransformation，lastImuTransformation 用于下一帧的雷达初始化（详见下一小节）；incrementalOdometryAffineFront在后续生成平滑的 lidar Odometry 中有应用。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">allocateMemory</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;    </span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">6</span>; ++i)&#123;</span><br><span class="line">        transformTobeMapped[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//// @file： LIO-SAM/src/imageProjection.cpp    </span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">imuDeskewInfo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...        </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="type">int</span>)imuQueue.<span class="built_in">size</span>(); ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        sensor_msgs::Imu thisImuMsg = imuQueue[i];</span><br><span class="line">        <span class="type">double</span> currentImuTime = thisImuMsg.header.stamp.<span class="built_in">toSec</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// get roll, pitch, and yaw estimation for this scan</span></span><br><span class="line">        <span class="comment">// 持续更新 rpy 直到 IMU 时间为小于雷达时间且相距最近</span></span><br><span class="line">        <span class="keyword">if</span> (currentImuTime &lt;= timeScanCur)</span><br><span class="line">            <span class="built_in">imuRPY2rosRPY</span>(&amp;thisImuMsg, &amp;cloudInfo.imuRollInit, &amp;cloudInfo.imuPitchInit, &amp;cloudInfo.imuYawInit);</span><br><span class="line">        <span class="keyword">if</span> (currentImuTime &gt; timeScanEnd + <span class="number">0.05</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上述 imuDeskewInfo() 中的 imuRPY2rosRPY() 函数（line 23）定义在 utility.h 中，函数功能简单，只将 IMU_raw 中的 orientation 作格式转换，不多赘述。</p>
+<h3 id="第二帧"><a href="#第二帧" class="headerlink" title="第二帧"></a>第二帧</h3><p>收到第二帧点云后，判断其不满足时间间隔阈值，直接返回。</p>
+<h3 id="第三帧"><a href="#第三帧" class="headerlink" title="第三帧"></a>第三帧</h3><p>收到点云后，进入函数 updateInitialGuess() 中，不是第一帧后只需要关注后面的两个判断条件，<code>cloudInfo.imuAvailable, cloudInfo.odomAvailable</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">updateInitialGuess</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    <span class="keyword">if</span> (cloudKeyPoses3D-&gt;points.<span class="built_in">empty</span>())&#123;...&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.odomAvailable == <span class="literal">true</span>)&#123;...&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.imuAvailable == <span class="literal">true</span>)&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>imuAvailable,odomAvailable </code> 这两个参数同样来自于文件 <code>imageProjection.cpp  </code>  ：</p>
+<ul>
+<li><p>参数 <code>cloudInfo.imuAvailable</code> 是指是否收到用于畸变纠正的 <code>IMU</code> 原始数据，是一开始就有的；</p>
+</li>
+<li><p>参数 <code>cloudInfo.odomAvailable</code> 是指是否收到用于畸变纠正的 <code>IMU odometry</code> ，而这个 Topic 是在收到节点 <code>mapOptmization</code> 发出的 <code>lidar odometry</code> 后再下一帧处理所得（收到第一帧需要初始化）；</p>
+</li>
+</ul>
+<p>因此进入第三个case，<code>if (cloudInfo.imuAvailable == true)&#123;...&#125;</code> 。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="type">void</span> updateInitialGue当前帧的位姿初值 `transFinal=transTobe * transIncre` <span class="built_in">ss</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    ...    </span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    ...    </span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.imuAvailable == <span class="literal">true</span>)&#123;        </span><br><span class="line">        <span class="built_in">ROS_WARN</span>(<span class="string">&quot;Guess init, imuAvailable&quot;</span>);</span><br><span class="line">        Eigen::Affine3f transBack = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);</span><br><span class="line">        Eigen::Affine3f transIncre = lastImuTransformation.<span class="built_in">inverse</span>() * transBack;</span><br><span class="line"></span><br><span class="line">        Eigen::Affine3f transTobe = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">        Eigen::Affine3f transFinal = transTobe * transIncre;</span><br><span class="line">        pcl::<span class="built_in">getTranslationAndEulerAngles</span>(transFinal, transformTobeMapped[<span class="number">3</span>], transformTobeMapped[<span class="number">4</span>], transformTobeMapped[<span class="number">5</span>], </span><br><span class="line">                                                      transformTobeMapped[<span class="number">0</span>], transformTobeMapped[<span class="number">1</span>], transformTobeMapped[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">        lastImuTransformation = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); <span class="comment">// save imu before return;</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一段代码的逻辑是，通过结合上一帧的雷达位姿和两帧雷达位姿的增量来计算而得，获取当前帧的雷达位姿。</p>
+<p>上一帧的雷达位姿初值 $T_{last_init}$ ：上一帧处理过程中存于变量 <code>lastImuTransformation</code> ；</p>
+<p>上一帧雷达位姿优化值 $T_{last_opt}$ ：上一帧的优化位姿，存于 <code>transformTobeMapped[]</code> ，格式转换得到 <code>transTobe</code> ；</p>
+<p>当前帧雷达位姿临时值 $T_{cur_temp}$ ：当前帧从 <code>IMU</code>原始数据中获取的位姿，存于 <code>transBack</code> ；</p>
+<p>当前帧的雷达位姿初值 $T_{cur_init}$ ：也就是当前函数的待求值，前帧的位姿初值 <code>transFinal=transTobe * transIncre</code> &gt;。</p>
+<p>两帧之间的位姿增量 $T_{between}$ ：上一帧位姿初值 $T_{last-init}$ 和当前帧雷达位姿临时值 $T_{cur_temp}$ 之间的增量（<code>transIncre</code>）；</p>
+<p>用公式表示为：<br>$$<br>T_{between}&#x3D;T_{last_init}^{-1}T_{cur_temp}\T_{cur_init}&#x3D;T_{last_opt}T_{between}<br>$$<br>得到当前帧位姿初值后，再度存于 <code>transformTobeMapped[]</code> 中对其进行更新，这个参数非常重要的。</p>
+<p>并同时更新<code>lastImuTransformation</code> 用于下一帧的处理。</p>
+<p>注1：前面的【当前帧雷达位姿临时值】是笔者自己起的一个名字，为区别于用于后端优化的初值，而用了临时值的说法。</p>
+<p>注2：这部分应用到有关矩阵右乘的知识点，主要多加注意，可参考这个问题 <a href="https://www.zhihu.com/question/263660493">矩阵左乘，右乘到底是什么意思？</a>中 <a href="https://www.zhihu.com/people/yan-fei-can-yue-tian-50">糖糖不是堂</a> 的回答。</p>
+<h3 id="第四帧"><a href="#第四帧" class="headerlink" title="第四帧"></a>第四帧</h3><p>同第二帧情形，不满足时间间隔阈值，直接返回。</p>
+<h3 id="第五帧"><a href="#第五帧" class="headerlink" title="第五帧"></a>第五帧</h3><p>到此时，</p>
+<h2 id="雷达里程计的最高频率"><a href="#雷达里程计的最高频率" class="headerlink" title="雷达里程计的最高频率"></a>雷达里程计的最高频率</h2><p>雷达里程计并不是对每一帧点云都进行处理，这里有一个时间阈值的判断。</p>
+<p><a href="">《后端优化中 雷达 位姿的初始化》</a>中所说的第二帧，是指满足时间间隔要求的第二帧，实为第三帧，收到的第二帧点云与第一帧</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="keyword">if</span> (timeLaserInfoCur - timeLastProcessing &gt;= mappingProcessInterval)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mappingProcessInterval</code>的默认参数是0.15s，所以在默认参数下，雷达里程计不会超过1&#x2F;0.15Hz</p>
+<p>参数配置文件： <code>LIO-SAM/config/params.yaml</code></p>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p>每个 Topic 具体发布的数据什么含义</p>
+</li>
+<li><p>mapOpt 中的lio_sam&#x2F;mapping&#x2F;odometry 与 lio_sam&#x2F;mapping&#x2F;odometry_incremental有什么区别与联系?</p>
+</li>
+</ul>
+<p><a href="https://github.com/TixiaoShan/LIO-SAM/issues/92">https://github.com/TixiaoShan/LIO-SAM/issues/92</a></p>
+<ul>
+<li><p>odometry&#x2F;imu 与 odometry&#x2F;imu_incremental</p>
+<p>odometry&#x2F;imu_incremental，在imagerojection发布</p>
+<p>odometry&#x2F;imu，在transformusion中，</p>
+</li>
+<li><p>transformTobeMapped 的初始化与优化历程</p>
+</li>
+<li><p>gtsam 中 的先验因子和 Values 有什么区别</p>
+</li>
+<li><p>imgProject 中用于畸变纠正的 IMU 数据 Odom 数据</p>
+<p>Odom 数据 为什么用 IMU 里程计，而不用 lidar Odom？因为后者滞后</p>
+<p>roll，pitch，yaw 的纠正为什么用原始IMU，而不用  IMU 里程计 中的orientation？ 尚不清楚。</p>
+</li>
+<li><p>addOdomFactor() 为何首帧的噪声模型参数的yaw为 PI*PI？</p>
+</li>
+</ul>
+]]></content>
   </entry>
 </search>
