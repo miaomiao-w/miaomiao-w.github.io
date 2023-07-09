@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>SLAM数学基础（五）：理解最大后验概率估计 |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-06-19-MAP"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  SLAM数学基础（五）：理解最大后验概率估计
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/06/19/2023-06-19-MAP/" class="article-date">
+  <time datetime="2023-06-18T16:00:00.000Z" itemprop="datePublished">2023-06-19</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SLAM/">SLAM</a> / <a class="article-category-link" href="/categories/SLAM/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">SLAM数学基础</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="0-问题引出"><a href="#0-问题引出" class="headerlink" title="0 问题引出"></a>0 问题引出</h2><p>在前文《极大似然估计》中，基于极大似然原理，仅利用样本信息实现了对模型参数的估计。</p>
+<p>极大似然原理的一个朴素认知，就是认为当前事件会发生，就是因为本身它发生的概率就比较大，那就干脆认为它发生的概率最大，基于这个前提来进行参数估计。</p>
+<p>但是我们知道，一个随机事件的任何一种情况的出现都要考虑其概率，样本中出现频次最高的并不一定就是概率最大的那种情况，尤其是样本量较小的时候，这么这种情况下极大似然估计值是不是就不太可靠了呢？这个时候 ，如果有一些关于这个模型参数的初始信息（这个初始信息其实就是先验知识），当同时结合先验知识和样本信息来进行参数估计，是不是得到的结果的可信度更高一些？</p>
+<h2 id="1-贝叶斯定理"><a href="#1-贝叶斯定理" class="headerlink" title="1 贝叶斯定理"></a>1 贝叶斯定理</h2><p>贝叶斯定理也叫贝叶斯公式、贝叶斯法则。</p>
+<p>贝叶斯公式如下：</p>
+<p>$$<br>P(A\vert{}B) &#x3D; \frac{P(B\vert{}A)\times P(A)}{P(B)}<br>$$</p>
+<p>$P(A\vert{}B)$ 是在 $B$ 已经发生的条件下， $A$ 发生的概率；是一种条件概率。</p>
+<p>$P(B\vert{}A)$ 是在 $A$ 已经发生的条件下， $B$ 发生的概率；也是条件概率。</p>
+<p>$P(A)$ 是事件 $A$ 发生的概率。</p>
+<p>$P(B)$ 是事件 $B$ 发生的概率。</p>
+<p>上述公式的推导并不难，由</p>
+<p>$$<br>P(A \cap B)&#x3D;P(B\vert{}A)\times P(A) \\<br>P(A \cap B)&#x3D;P(A\vert{}B)\times P(B)<br>$$</p>
+<p>就可推出，但这不是重点，建立一种直观的理解才是更重要的。</p>
+<hr>
+<p>考虑并理解以下表述方式：</p>
+<p>贝叶斯公式可以用来计算在给定某个观测结果的情况下，某个备选假设成立的概率。</p>
+<p>设一个总体服从于某种分布，该分布模型参数为 $\theta$ ，$D$ 表示观测到的数据。根据贝叶斯公式，在给定数据 $D$ 下模型参数 $\theta$ 的概率分布：</p>
+<p>$$<br>P(\theta\vert{}D) &#x3D; \frac{P(D\vert{}\theta)\times P(\theta)}{P(D)}<br>$$</p>
+<p>其中，$P(\theta\vert{}D)$ 表示在已有数据 $D$ 的前提下，模型参数 $\theta$ 的概率分布，称为后验概率； $P(D\vert{}\theta)$ 是在模型参数为 $\theta$ 的前提下，观测到数据 $D$ 的概率（也称为似然函数，后面再讲）；</p>
+<p> $P(\theta)$ 是模型参数 $\theta$ 的概率分布，称为先验概率；</p>
+<p> $P(D)$ 表示观测到数据 $D$ 的概率。</p>
+<p>后验概率是指在得到新的数据或信息后，重新计算某个事件发生的概率，即根据先前的经验和新的证据来更新我们的概率判断。</p>
+<h2 id="2-贝叶斯公式中的似然函数理解"><a href="#2-贝叶斯公式中的似然函数理解" class="headerlink" title="2 贝叶斯公式中的似然函数理解"></a>2 贝叶斯公式中的似然函数理解</h2><p>上面提到， $P(D\vert{}\theta)$ 也称为似然函数，在数值上， $ P(D\vert{}\theta)&#x3D;L(\theta\vert{}D)$ ，</p>
+<p>等式左边， $P(D\vert{}\theta)$ 其含义是在条件 $\theta$ 下观测到数据 $D$ 的概率，</p>
+<p>等式右边， $L(\theta\vert{}D)$ 其含义是当已有观测数据 $D$ ，模型参数 $\theta$ 的似然。</p>
+<p>为什么是这样呢？回顾似然函数的定义：</p>
+<p><img src="/MD_IMG/2023-06-19-MAP.assets/image-20230620223556799.png" alt="image-20230620223556799"></p>
+<p>所以事实上，我们这里说到的联合概率，以及前面的条件概率 $P(D\vert{}\theta)$ ，似然 $L(\theta\vert{}D)$ ，都是指同一个东西，形式上都是：</p>
+<p>$$<br>p(x_1;\theta)p(x_2;\theta)…p(x_n;\theta)&#x3D;\prod_{i&#x3D;1}^n{p(x_i;\theta)}<br>$$</p>
+<p>只不过，当模型参数 $\theta$ 已知时，它一般用来描述事件发生的概率，此时表述为条件概率或联合概率密度，着眼于“概率”；当模型参数 $\theta$ 未知时，这个式子一般就是用来估计模型参数 $\theta$ 的，此时被称为似然函数，是关于模型参数 $\theta$ 的函数，参数 $\theta$ 的估计方法一般有极大似然估计或最大后验估计（这两种方法也是频率学派和贝叶斯学派各自思想主张的具体体现之一，如果有时间再来总结对比吧）。</p>
+<hr>
+<p><strong>概率与似然的一种理解</strong>：</p>
+<p>“概率”描述了给定模型参数后，描述结果的合理性，而不涉及任何观察到的数据。</p>
+<p>“似然”描述了给定了特定观测值后，描述模型参数是否合理。</p>
+<hr>
+<p><strong>先验概率与后验概率的一种理解</strong>：</p>
+<p>先验概率是 以全事件 $Ω$ 为背景下， $A$ 事件发生的概率， $P(A\vert{}Ω)$ 。</p>
+<p>后验概率是 以新事件 $B$ 为背景下，$A$事件发生的概率， $P(A\vert{}B)$ 。</p>
+<p>全事件一般是统计获得的，所以称为先验概率，是指没有实验前的概率，是普遍认可的先验知识（例如，硬币两面是均匀的）。</p>
+<p>新事件一般是实验，如试验 $B$ ，现在是一个具体的情境了（例：我们现在手里有一个具体的硬币在做试验了），此时的事件背景从全事件变成了 $B$ ，该事件 $B$ 可能对 $A$ 的概率有影响，那么需要对$A$现在的概率进行一个修正，从 $P(A\vert{}Ω)$ 变成 $P(A\vert{}B)$ ，</p>
+<p>所以称 $P(A\vert{}B)$ 为后验概率，也就是试验(事件$B$发生)后的概率，依据试验情况进行更新后的概率。</p>
+<h2 id="3-最大后验概率MAP"><a href="#3-最大后验概率MAP" class="headerlink" title="3 最大后验概率MAP"></a>3 最大后验概率MAP</h2><p>讲到这里才真正说到最大后验概率估计，其实基本上已经说的差不多了。</p>
+<p>最大后验概率（Maximum a posteriori probability，MAP）是一种用来描述随机事件的概率的统计方法。是贝叶斯推断中的一个重要方法，表示在给定观测值和先验信息时，得到最大后验概率的参数值。</p>
+<p>在贝叶斯推断中，粗略地讲，对于一个已知的随机事件 $X$ 和其分布的先验知识 $P(\theta)$，其中 $\theta$ 是事件 $X$ 的未知参数，我们可以通过贝叶斯公式求出其后验概率 $P(\theta\vert{}X)$。具体而言，可以写作：</p>
+<p>$$<br>P(\theta\vert{}X) &#x3D; \frac{P(X\vert{}\theta)P(\theta)}{P(X)}<br>$$</p>
+<p> 其中，$P(X\vert{}\theta)$ 是已知参数 $\theta$ 下 $X$ 观测值的概率密度函数，称为似然函数；</p>
+<p>$P(\theta)$ 是先验分布，即在进行观测前对未知参数 $\theta$ 的分布的了解；</p>
+<p>$P(X)$ 是归一化常数，确保后验概率 $P(\theta\vert{}X)$ 的积分等于 $1$。</p>
+<p>最大后验概率是指，在已知观测值 $X$ 和先验知识 $P(\theta)$ 的基础上，求出一个最有可能的参数 $\theta_{MAP}$，使得其后验概率 $P(\theta_{MAP}\vert{}X)$ 达到最大。即：</p>
+<p>$$<br>\theta_{MAP} &#x3D; \underset{\theta}{\operatorname{argmax}} P(\theta\vert{}X)<br>$$</p>
+<p>最大化后验概率求参数 $\theta$ 的估计值的方法，就是最大后验估计（MAP estimation）。</p>
+<p>在一些数据较少且参数维度较高的问题中，最大后验估计算法相对于极大似然估计、普通最小二乘法等其他估计算法，能够通过先验概率信息有效避免过拟合和欠拟合等问题，提高模型的泛化能力。</p>
+<p>当数据量或样本量非常大时，极大似然估计与最大后验估计是殊途同归的。</p>
+<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>齐民友主编《概率论和数理统计》</p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MAP/" rel="tag">MAP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="tag">SLAM数学基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9C%80%E5%A4%A7%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87/" rel="tag">最大后验概率</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2023/06/20/2023-06-20-LSM/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            SLAM数学基础（六）：最小二乘法
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2023/06/12/2023-06-12-MLE/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">SLAM数学基础（四）：理解极大似然估计</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>SLAM数学基础（六）：最小二乘法 |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-06-20-LSM"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  SLAM数学基础（六）：最小二乘法
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/06/20/2023-06-20-LSM/" class="article-date">
+  <time datetime="2023-06-19T16:00:00.000Z" itemprop="datePublished">2023-06-20</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SLAM/">SLAM</a> / <a class="article-category-link" href="/categories/SLAM/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">SLAM数学基础</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="1-最简单的最小二乘问题"><a href="#1-最简单的最小二乘问题" class="headerlink" title="1 最简单的最小二乘问题"></a>1 最简单的最小二乘问题</h2><p>先不考虑模型的适用场景，以及为什么要用这个方法，只从数学的角度，看这是一个什么问题。有如下数学模型：<br>$$<br>\min_{x}{F(x)}&#x3D;\frac{1}{2} \parallel{f(x)}\parallel_2^2<br>$$<br>最小二乘问题就是求满足上式的 $x$ 值。其中，自变量 $x\in\mathbb{R}^n$ ，$f$ 是任意标量非线性函数 $f(x):\mathbb{R}^n\mapsto\mathbb{R}$ 。注意这里的系数 $\frac{1}{2}$ 无关紧要，有没有都不会影响之后的结论。</p>
+<p>拆解一下最小二乘，顾名思义，“二乘”就是指平方，“最小”指，要求的是函数 $F(x)$取最小值的时候 $x$ 的取值。当然，上面这个是最简单的一个最小二乘问题。</p>
+<p>如果 $f$ 是个数学形式上很简单的函数，那么该问题可以用解析形式来求。令目标函数的导数为零： $\frac{dF}{dx}&#x3D;0$ ，然后求解 $x$ 的最优值，就和求二元函数的极值一样。解这个方程，就得到了导数为零处的极值。它们可能是极大、极小或鞍点处的值，只要逐个比较它们的函数值大小即可。</p>
+<p>但是，这个方程是否容易求解呢？这取决于 $f$ 导函数的形式。如果 $f$ 为简单的线性函数，那么这个间题就是简单的线性最小二乘问题；但是有些导函数可能形式复杂，使得该方程可能不容易求解。求解这个方程需要我们知道关于目标函数的全局性质，而通常这是不大可能的。</p>
+<p>对于不方便直接求解的最小二乘问题，可以用迭代的方式（到这里才是重点要了解学习的地方），从一个初始值出发，不断地更新当前的优化变量，使目标函数下降。对于最小二乘问题，有一阶和二阶梯度法（最速下降法、牛顿法），高斯牛顿法，列文伯格一马夸尔特法等，后两种实际应用较多，且高斯牛顿法最常用。</p>
+<p>以上是最简单的模型情况，下面再来看最小二乘在一些实践中的应用。</p>
+<h2 id="2-最小二乘的提出"><a href="#2-最小二乘的提出" class="headerlink" title="2 最小二乘的提出"></a>2 最小二乘的提出</h2><p>在生产实践中，经常会遇到利用一组观测数据来估计某些未知参数的问题。例如，一个做匀速直线运动的质点在时刻 $t$ 的位置是 $\hat{y}$ ，可以用如下的线性函数来描述：<br>$$<br>\hat{y}&#x3D;\hat{\alpha}+t\hat{\beta}<br>$$<br>式中， $\hat{\alpha}$ 是质点在$t&#x3D;0$时刻的初始位置， $\hat{\beta}$ 是平均速度，它们是待估计的未知参数，可见这类问题为线性参数的估计问题。对于这一问题，如果观测没有误差，则只要在两个不同时刻 $t_1$ 和 $t_2$ 观测出质点的相应位置 ${y_1}$ 和 ${y_2}$ ，由上述函数分别建立两个方程，就可以解出 $\hat{\alpha}$ 和 $\hat{\beta}$ 的值了。但是，实际上在观测时，考虑到观测值带有偶然误差，所以总是作多余观测。在这种情况下，为了求得 $\hat{\alpha}$ 和 $\hat{\beta}$ ，就需要在不同时刻 $t_1,t_2,\ …\ ,t_n$ 来测定其位置，得出一组观测值 $y_1,y_2,\ …\ ,y_n$ 这时，由上式可以得到：<br>$$<br>\delta{}_i&#x3D;\hat{\alpha}+t_i\ \hat{\beta}-y_i<br>$$<br>$\delta{}_i$ 为观测值 $y_i$ 与真值 $\hat{y_i}(&#x3D;\hat{\alpha}+t_i\ \hat{\beta})$ 的差值，即观测误差（或者成为残差）。由于观测误差的存在，由观测数据 $(t_i,y_i)$ 描绘不成直线，而有某些“摆动”。</p>
+<p>这里就产生这样一个问题：用什么准则来对参数 $\hat{\alpha}$ 和 $\hat{\beta}$ 进行估计，从而使估计直线 $\hat{y}&#x3D;\hat{\alpha}+t\hat{\beta}$  “最佳”地拟合于各观测点？（哦对了，不要忘了，我们进行观测的目的是得到参数 $\hat{\alpha}$ 和 $\hat{\beta}$ 的估计值。）</p>
+<p>这里的“最佳”一词可以有不同的理解。例如，</p>
+<ul>
+<li><p>可以认为：各观测点到直线最大距离取最小值时，直线是“最佳”的；</p>
+</li>
+<li><p>也可以认为，各观测点到直线的偏差的绝对值之和取最小值时，直线是“最佳”的，等等。</p>
+</li>
+</ul>
+<p>在不同的“最佳要求下，可以求得相应问题中参数 $\hat{\alpha}$ 和 $\hat{\beta}$ 不同的估值。</p>
+<p>早在19世纪，勒让德就认为依据“<strong>残差的平方和最小</strong>”估计出来的模型是最接近真实情形的。这也就是最小二乘原理，按照最小二乘原理的要求，认为“最佳”地拟合于各观测点的估计曲线，应使各观测点到该直线的偏差的平方和达到最小。</p>
+<p>在众多的“最佳”中，为什么选择“<strong>残差的平方和最小</strong>”呢？这里暂且不表，后续再说。</p>
+<h2 id="3-最小二乘的多维形式"><a href="#3-最小二乘的多维形式" class="headerlink" title="3 最小二乘的多维形式"></a>3 最小二乘的多维形式</h2><p>\&#96;&#96;define`</p>
+<h2 id="4-最小二乘估计与极大似然估计"><a href="#4-最小二乘估计与极大似然估计" class="headerlink" title="4 最小二乘估计与极大似然估计"></a>4 最小二乘估计与极大似然估计</h2><h2 id="5-最小二乘问题的解法"><a href="#5-最小二乘问题的解法" class="headerlink" title="5 最小二乘问题的解法"></a>5 最小二乘问题的解法</h2><h2 id="6-【SLAM数学基础】系列笔记"><a href="#6-【SLAM数学基础】系列笔记" class="headerlink" title="6 【SLAM数学基础】系列笔记"></a>6 【SLAM数学基础】系列笔记</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+</li>
+</ul>
+<hr>
+<p>当估计的变量是一个服从高斯分布的随机变量时，最小二乘可以由极大似然估计引出。此种情况下最小二乘估计和极大似然估计结果是一致的。</p>
+<p>所以，最小二乘估计是极大似然估计的一种特例（？？？）。</p>
+<p>服从高斯分布的随机变量由于服从正态分布有许多优雅的性质，因此广泛应用于工程实践中。不知道是不是错觉，极大似然估计多停留在数学层面，工程实践中最多的还是最小二乘估计。</p>
+<hr>
+<blockquote>
+<p>高翔、张涛等著《视觉SLAM十四讲》</p>
+<p>武汉大学测绘学院测量平差学科组编著《误差理论与测量平差基础》</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/MoreAction_/article/details/106443383"> 一文让你彻底搞懂最小二乘法—胤风的博客</a></p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LSM/" rel="tag">LSM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="tag">SLAM数学基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95/" rel="tag">最小二乘法</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2023/06/23/2023-06-23-segmentation-01/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            地面分割算法（一）：linefit_ground_segmentation
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2023/06/19/2023-06-19-MAP/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">SLAM数学基础（五）：理解最大后验概率估计</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

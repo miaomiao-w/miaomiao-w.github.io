@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>SLAM数学基础（三）：概率论基础概念及相关公式 |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-06-07-probability"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  SLAM数学基础（三）：概率论基础概念及相关公式
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/06/07/2023-06-07-probability/" class="article-date">
+  <time datetime="2023-06-06T16:00:00.000Z" itemprop="datePublished">2023-06-07</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SLAM/">SLAM</a> / <a class="article-category-link" href="/categories/SLAM/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">SLAM数学基础</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="0-写在前面"><a href="#0-写在前面" class="headerlink" title="0 写在前面"></a>0 写在前面</h2><p>这不是一个深入浅出的入门讲解。</p>
+<p>实在是因为本人苦于各种公式概念傻傻分不清楚，看了一遍一遍又边看边忘，想要时不时捋一捋。</p>
+<h2 id="1-条件概率与独立性"><a href="#1-条件概率与独立性" class="headerlink" title="1 条件概率与独立性"></a>1 条件概率与独立性</h2><p><strong>条件概率</strong>：设有两个事件 $A, B$, 而 $P(B)\neq{} 0$. 则“在给定 $B$ 发生的情况下 $A$ 发生的条件概率”，记为 $P(A\vert{}B)$，定义为</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200205028.png" alt="image-20230607200205028"></p>
+<p><strong>独立</strong>：两个事件 $A, B$ 若满足 $P(AB) &#x3D; P(A)P(B)$，则称 $A, B$ 独立。</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200231761.png" alt="image-20230607200231761"></p>
+<p><strong>概率乘法定理</strong>： 若干个独立事件之积的概率，等于各事件的概率之乘积，即：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200145134.png" alt="image-20230607200145134"></p>
+<p><strong>全概率公式</strong>：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200133322.png" alt="image-20230607200133322"></p>
+<p><strong>贝叶斯公式</strong>：在全概率公式的假定下，有：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200340184.png" alt="image-20230607200340184"></p>
+<h2 id="2-概率分布"><a href="#2-概率分布" class="headerlink" title="2 概率分布"></a>2 概率分布</h2><h3 id="2-1-离散型随机变量"><a href="#2-1-离散型随机变量" class="headerlink" title="2.1 离散型随机变量"></a>2.1 离散型随机变量</h3><p>需要区分概率分布与分布函数。</p>
+<p><strong>概率函数</strong>：</p>
+<p>概率函数（离散型） 设 <strong>X</strong> 为离散型随机变量，其全部可能值为{<em>a<del>1</del> , a<del>2</del> ,</em> ···}，则其概率函数为：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607232744751.png" alt="image-20230607232744751"></p>
+<p>上式称为随机变量 <strong>X</strong> 的<strong>概率分布</strong>。</p>
+<p>概率分布，其实严格意义来说，应该叫做”<strong>离散型随机变量的值分布和概率分布</strong>“，强调分布。</p>
+<p><strong>概率分布函数</strong>：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607233026312.png" alt="image-20230607233026312"></p>
+<p><strong>伯努利分布（Bernoulli）</strong>：</p>
+<p>伯努利分布是关于布尔变量 $x\in {0,1}$ 的概率分布，其连续参数 $p \in [0,1]$ 表示变量 $x&#x3D;1$ 的概率。</p>
+<p>直观理解就是扔一次硬币，要不正面要不背面，如果是标准的硬币 p&#x3D;0.5 。</p>
+<p>$$<br>P(x\vert{}p)&#x3D;p^x(1−p)^{1−x}\\<br>E(x)&#x3D;p,  var(x)&#x3D;p(1−p)<br>$$</p>
+<p><strong>二项分布（Binomial）</strong>：</p>
+<p>二项分布就是重复 <em>n</em> 次独立的伯努利试验。</p>
+<p>若随机变量 X 的可能取值为0, 1, ···, n，且概率分布为</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234346009.png" alt="image-20230607234346009"></p>
+<p>则称 X 服从二项分布，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234452556.png" alt="image-20230607234452556"></p>
+<p>延展：泊松分布、超几何分布、负二项分布</p>
+<h3 id="2-2-连续型随机变量"><a href="#2-2-连续型随机变量" class="headerlink" title="2.2 连续型随机变量"></a>2.2 连续型随机变量</h3><p><strong>概率密度函数</strong>与<strong>分布函数</strong>:</p>
+<p>记分布函数为$F(x)$，记概率密度函数为$f(x)$，则有：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235218630.png" alt="image-20230607235218630"></p>
+<p>并且连续型概率密度函数有以下性质：</p>
+<p>（1） <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235435509.png" alt="image-20230607235435509"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235458144.png" alt="image-20230607235458144"></p>
+<p>（3）对于任何常数 <em>a &lt; b</em>，有：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235536259.png" alt="image-20230607235536259"></p>
+<p><strong>正态分布</strong>：</p>
+<p>正态随机变量 <strong>X</strong> ，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235838081.png" alt="image-20230607235838081"> </p>
+<p>概率密度函数为：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235919576.png" alt="image-20230607235919576"></p>
+<p><strong>标准正态分布</strong>：</p>
+<p>标准正态随机变量 <strong>X</strong> ，<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000039126.png" alt="image-20230608000039126"> </p>
+<p>概率密度函数为：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000117309.png" alt="image-20230608000117309"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000205752.png" alt="image-20230608000205752"> </p>
+<p>延展：指数分布、均匀分布</p>
+<h2 id="3-多维随机变量"><a href="#3-多维随机变量" class="headerlink" title="3 多维随机变量"></a>3 多维随机变量</h2><h3 id="3-1-多维随机变量（随机向量）"><a href="#3-1-多维随机变量（随机向量）" class="headerlink" title="3.1 多维随机变量（随机向量）"></a>3.1 多维随机变量（随机向量）</h3><p><strong>n 维随机变</strong>：</p>
+<p>一般地，设 $X &#x3D; (X_1, X_2,  ··· , X_n)$ 为一个n 维向量，其每个分量都是一维随机变量。</p>
+<p><strong>【离散型】</strong>：</p>
+<p>以 ${a_{i1},a_{i2},}$记 $X_i$ 的全部可能值 $(i&#x3D;1,2,…)$ ，则事件 ${X_1&#x3D;a_{1j_1},\ …\ ,X_n&#x3D;a_{1nj_n},}$ 的概率</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234746142.png" alt="image-20230608234746142"></p>
+<p>称为随机向量  $X &#x3D; (X_1, X_2,  ··· , X_n)$ 的概率函数或概率分布。</p>
+<p>概率函数满足的条件：</p>
+<p>（1）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234910580.png" alt="image-20230608234910580"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234926926.png" alt="image-20230608234926926"></p>
+<p><strong>【连续型】</strong>：（？？）</p>
+<p>若$f(x_1,…,x_n)$ 是定义在 $\mathbb{R}^n$ 上的非负函数，使对 $\mathbb{R}^n$ 中的任意集合  $A$, 有</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608233817923.png" alt="image-20230608233817923"></p>
+<p>则称 $f$ 是 $X$ 的概率密度函数。</p>
+<p><strong>边缘分布和边缘概率密度</strong>：</p>
+<p> 边缘分布其实就是多维随机变量中的其中一维随机变量的分布函数。</p>
+<p>对于连续型而言，边缘分布如下<br>$$<br>F_X(x)&#x3D;F(x,∞)&#x3D;∫^x_{−∞}[∫^∞_{−∞}f(x,y)dy]dx<br>$$<br>有了边缘分布函数，自然有边缘概率密度函数，根据定义及上面的式子有<br>$$<br>f_X(x)&#x3D;∫^∞_{−∞}f(x,y)dy<br>$$<br> y的情况也相同。</p>
+<p>事实上，我们根据二维正态分布的概率密度，求出其边缘概率密度，发现边缘概率密度正是一维正态分布的的概率密度。</p>
+<p><strong>有关注意事项</strong>：<br>(1) 定义一维或者多维连续型随机变量时，实质都在于有概率密度函数存在。（有密度函数的随机变量）<br>(2) 连续型随机变量不能简单定义为“其各分量都是一维连续型随机变量的那种随机向量”。</p>
+<h3 id="3-2-二维正态分布"><a href="#3-2-二维正态分布" class="headerlink" title="3.2 二维正态分布"></a>3.2 二维正态分布</h3><p>概率密度函数：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235056886.png" alt="image-20230608235056886"></p>
+<p>其中：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png" alt="image-20230608235128283"></p>
+<p>记为：</p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png" alt="image-20230608235219900"></p>
+<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+</li>
+</ul>
+<p align="center">---END---</p>
+
+<hr>
+<hr>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://ustc-resource.github.io/USTC-Course/%E6%A6%82%E7%8E%87%E8%AE%BA%E4%B8%8E%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/notes/index.html">USTC-Course: 中国科学技术大学课程资源</a></p>
+<p>齐民友主编《概率论与数理统计》</p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="tag">SLAM数学基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A6%82%E7%8E%87%E8%AE%BA/" rel="tag">概率论</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2023/06/12/2023-06-12-MLE/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            SLAM数学基础（四）：理解极大似然估计
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2023/06/05/2023-06-05-transform/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">SLAM数学基础（二）：坐标转换</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

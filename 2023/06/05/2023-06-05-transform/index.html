@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>SLAM数学基础（二）：坐标转换 |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-06-05-transform"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  SLAM数学基础（二）：坐标转换
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/06/05/2023-06-05-transform/" class="article-date">
+  <time datetime="2023-06-04T16:00:00.000Z" itemprop="datePublished">2023-06-05</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SLAM/">SLAM</a> / <a class="article-category-link" href="/categories/SLAM/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">SLAM数学基础</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="1-坐标转换矩阵"><a href="#1-坐标转换矩阵" class="headerlink" title="1 坐标转换矩阵"></a>1 坐标转换矩阵</h2><h3 id="1-1-旋转矩阵"><a href="#1-1-旋转矩阵" class="headerlink" title="1.1 旋转矩阵"></a>1.1 旋转矩阵</h3><p>旋转矩阵描述了一个旋转过程，可以用它来表示两个坐标系之间的旋转变换。也叫方向余弦矩阵。</p>
+<p>相关性质：</p>
+<ul>
+<li>旋转矩阵 $\boldsymbol{R}$ 是一个正交矩阵，且行列式为1（反之，行列式为1的正交矩阵就是一个旋转矩阵）；</li>
+<li>旋转矩阵 $\boldsymbol{R}$ 的转置（也即 $\boldsymbol{R}$ 的逆，因为对于正交矩阵， $\boldsymbol{R}^{-1}&#x3D;\boldsymbol{R}^T$ ）刻画了一个相反的旋转；</li>
+<li>对加法不封闭，也就是说，对于任意两个旋转矩阵，按照矩阵加法定义相加，其结果不再是一个旋转矩阵；</li>
+<li>乘法封闭；</li>
+</ul>
+<p>三维旋转矩阵构成了特殊正交群$\boldsymbol{SO(3)}$。后续详述。</p>
+<h3 id="1-2-变换矩阵"><a href="#1-2-变换矩阵" class="headerlink" title="1.2 变换矩阵"></a>1.2 变换矩阵</h3><p>变换矩阵描述了一个欧式变换过程，包含旋转 $\boldsymbol{R}$ 和平移 $\boldsymbol{t}$ 。</p>
+<p>为方便书写和计算，将一次欧式变换中的旋转 $\boldsymbol{R}$ 和平移 $\boldsymbol{t}$ 写成变换矩阵 $\boldsymbol{T}$ 形式，向量坐标写成齐次坐标形式。</p>
+<img src="MD_IMG/2023-06-05-transform.assets/image-20230605152752584.png" alt="image-20230605152752584" style="zoom: 60%;" />
+
+<p><strong>相关性质</strong>：</p>
+<ul>
+<li><p>变换矩阵 $\boldsymbol{T}$ 中的旋转矩阵 $\boldsymbol{R}$ 如前所述，其相关性质依然具备；</p>
+</li>
+<li><p>两次变换的叠加可表示为变换矩阵的乘法：</p>
+</li>
+</ul>
+<p>$$<br>\boldsymbol{b}&#x3D;\boldsymbol{T}_1\boldsymbol{a}, \boldsymbol{c}&#x3D;\boldsymbol{T}_2\boldsymbol{b},\qquad\Rightarrow \qquad\boldsymbol{c}&#x3D;\boldsymbol{T}_2\boldsymbol{T}_1\boldsymbol{a},<br>$$</p>
+<ul>
+<li>对加法不封闭，也就是说，对于任意两个变换矩阵，按照矩阵加法定义相加，其结果不再是一个变换矩阵；</li>
+<li>乘法封闭；</li>
+</ul>
+<p>三维空间下的变换矩阵构成了特殊欧式群$\boldsymbol{SE(3)}$。后续详述。</p>
+<h2 id="2-李群与李代数"><a href="#2-李群与李代数" class="headerlink" title="2 李群与李代数"></a>2 李群与李代数</h2><h3 id="2-1-何为群？"><a href="#2-1-何为群？" class="headerlink" title="2.1 何为群？"></a>2.1 何为群？</h3><p><strong>群（Group）</strong>是<strong>一种集合</strong>加上<strong>一种运算</strong>的代数结构。</p>
+<p>集合记为 $A$ ，运算记为 $\cdot{}$  ，那么群可以记作 $G&#x3D;(A,\ \dot{}\ )$ 。群要求集合 $A$ 和运算 $\cdot{}$  满足以下条件：</p>
+<ul>
+<li>封闭性： $\forall{}a_1,a_2\in{}A，\qquad\ a_1\cdot{}a_2\in{}A$</li>
+<li>结合律： $\forall{}a_1,a_2,a_3\in{}A，\quad(a_1\cdot{}a_2)\cdot{}a_3 &#x3D;a_1\cdot{}\ (a_2\cdot{}a_3)$</li>
+<li>幺元：     $\exists{}a_0\in{}A,\qquad{}s.t.;\forall{}a\in{}A,\qquad{}a_0\cdot{}a&#x3D;a\cdot{}a_0&#x3D;a$</li>
+<li>逆：         $\forall{}a\in{}A,\qquad{}\exists{}a^{-1}\in{}A,\qquad{}s.t.;a\cdot{}a^{-1}&#x3D;a$</li>
+</ul>
+<p><strong>常见的群：</strong></p>
+<ul>
+<li>整数的加法                       $G&#x3D;(\mathbb{Z},+)$</li>
+<li>去掉0后的有理数的乘法  $G&#x3D;(\mathbb{Q}\setminus0,\cdot{})$</li>
+</ul>
+<p><strong>常见的矩阵中的群：</strong></p>
+<ul>
+<li>一般线性群 $GL(n)$   指 $n\times{}n$ 的可逆矩阵，他们对矩阵乘法成群。</li>
+<li>特殊正交群 $SO(n)$   也就是所谓的旋转矩阵群，其中$SO(2)$和$SO(3)$最为常见。</li>
+<li>特殊欧式群 $SE(n)$   也就是前面提到的n维欧氏变换，如$SE(2)$和$SE(3)$ 。</li>
+</ul>
+<h3 id="2-2-何为李群"><a href="#2-2-何为李群" class="headerlink" title="2.2 何为李群"></a>2.2 何为李群</h3><p>李群是指具有连续（光滑）性质的群。</p>
+<p>类似整数群 $\mathbb{Z}$ 那样离散的群没有连续性质，所以不是李群。</p>
+<p>$SO(n)$ 和 $SE(n)$ 在实数空间上是连续的。我们能够直观地想象一个刚体能够连续地在空间中运动，所以它们都是李群。</p>
+<h3 id="特殊正交群SO-3"><a href="#特殊正交群SO-3" class="headerlink" title="特殊正交群SO(3)"></a>特殊正交群SO(3)</h3><h3 id="特殊欧式群SE-3"><a href="#特殊欧式群SE-3" class="headerlink" title="特殊欧式群SE(3)"></a>特殊欧式群SE(3)</h3><h3 id="李代数的理解"><a href="#李代数的理解" class="headerlink" title="李代数的理解"></a>李代数的理解</h3><h2 id="3-补充知识点"><a href="#3-补充知识点" class="headerlink" title="3 补充知识点"></a>3 补充知识点</h2><p>记 $\ast{}$ 是非空集合 $S$ 上的二元运算：</p>
+<ul>
+<li><p><strong>幺元</strong>（也称单位元），当：</p>
+<p> $\exists{}e\in{}S,\qquad{}s.t.;\forall{}x\in{}S,\qquad{}e\ast{}x&#x3D;x\ast{}e&#x3D;x$ ，那么就称 $e$ 是 $(S,*)$ 的幺元。</p>
+<p>幺元具有不变性。</p>
+<p>【举例】：</p>
+<p>实数集合 $\mathbb{R}$ 上的加法运算中，0就是幺元；</p>
+<p>实数集合 $\mathbb{R}$ 上的乘法运算中，1就是幺元。</p>
+</li>
+<li><p><strong>零元</strong>，当：</p>
+<p>$\exists{}o\in{}S,\qquad{}s.t.;\forall{}x\in{}S,\qquad{}o\ast{}x&#x3D;x\ast{}o&#x3D;o$ ，那么就称 $o$ 是 $(S,*)$ 的零元。</p>
+<p>【举例】实数乘法运算中，零元就是对任意元x，都有xa&#x3D;ax&#x3D;a，则a为零元，因此0即为零元。</p>
+</li>
+<li><p><strong>逆元</strong>，当：</p>
+<p>$\forall{}a\in{}S,\qquad{}s.t.;\exists{}b\in{}S,\qquad{}a\ast{}b&#x3D;b\ast{}a&#x3D;e$ ，那么 $a$ 和 $b$ 互为逆元， $a$ 是 $b$ 的逆元，同时 $b$ 是 $a$ 的逆元。</p>
+<p>【举例】实数乘法运算中，互为倒数的两个数互称逆元，2和1&#x2F;2互为逆元，1和其本身互为逆元;</p>
+</li>
+</ul>
+<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>高翔、张涛等著《视觉SLAM十四讲》</p>
+</blockquote>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SLAM%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="tag">SLAM数学基础</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5/" rel="tag">变换矩阵</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/" rel="tag">旋转矩阵</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9D%8E%E4%BB%A3%E6%95%B0/" rel="tag">李代数</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%9D%8E%E7%BE%A4/" rel="tag">李群</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%89%B9%E6%AE%8A%E6%AC%A7%E5%BC%8F%E7%BE%A4/" rel="tag">特殊欧式群</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%89%B9%E6%AE%8A%E6%AD%A3%E4%BA%A4%E7%BE%A4/" rel="tag">特殊正交群</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2023/06/07/2023-06-07-probability/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            SLAM数学基础（三）：概率论基础概念及相关公式
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2023/06/04/2023-06-04-vector/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">SLAM数学基础（一）：向量与矩阵</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

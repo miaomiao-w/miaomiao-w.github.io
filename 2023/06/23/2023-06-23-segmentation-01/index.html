@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>地面分割算法（一）：linefit_ground_segmentation |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-06-23-segmentation-01"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  地面分割算法（一）：linefit_ground_segmentation
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/06/23/2023-06-23-segmentation-01/" class="article-date">
+  <time datetime="2023-06-22T16:00:00.000Z" itemprop="datePublished">2023-06-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BE/">激光雷达</a> / <a class="article-category-link" href="/categories/%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BE/lidar%E7%AE%97%E6%B3%95/">lidar算法</a> / <a class="article-category-link" href="/categories/%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BE/lidar%E7%AE%97%E6%B3%95/%E5%9C%B0%E9%9D%A2%E5%88%86%E5%89%B2/">地面分割</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>paper: <a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5548059/figures#figures">Fast segmentation of 3D point clouds for ground vehicles</a></p>
+<p>Github: <a target="_blank" rel="noopener" href="https://github.com/lorenwel/linefit_ground_segmentation">Github-lorenwel-linefit_ground_segmentation</a></p>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h2><p>这篇论文的算法是应用比较广泛的激光点云地面分割算法，在许多激光SLAM算法中都有引用。该论文方法效率高，且可以适用于具有一定坡度的地面。</p>
+<p>算法中，将点云划分为多个扇区，一个扇区作为一个独立的处理单元。每个扇区再分成多个容器，每个容器取一个最低点，根据这些最低点拟合地面线，并以此为基础判断全部激光点是否为地面点，实现地面点云与非地面点云的分割。算法分为以下几个主要步骤：</p>
+<ul>
+<li><p>点云划分与映射</p>
+</li>
+<li><p>地面线段拟合</p>
+</li>
+<li><p>地面点云分割（地面点与非地面点判断）</p>
+</li>
+</ul>
+<h2 id="2-点云结构化"><a href="#2-点云结构化" class="headerlink" title="2 点云结构化"></a>2 点云结构化</h2><p>点云结构化即：将一组无序的激光点云按照一定规则进行划分和映射，最终得到一组有序点云，也相当于是建立了索引，便于后续的算法处理。</p>
+<ul>
+<li>将激光点云按角度等间隔为 $N$ 个$Segment$（每个$Segment$为一个扇区），对于每个$Segment$ 按距离又等分$M$个$Bin$ （即容器），于是，每个点对应一个$(Segment,Bin)$；</li>
+<li>对于每个三维点 $P(x,y,z)$ ，平面坐标用极坐标方式表示 $P(r,\theta,z)$ ，由于每个$Segment$ 内的点被认为角度一样，于是每个$Segment$ 内角度可以忽略，用二维点 $P(r,z)$ 表示，其中 $r&#x3D;\sqrt{x^2+y^2}$ ，相当于降维。</li>
+<li>计算每个 $Bin$ 内的最低点 $MinZPoint(d,z)$ 。</li>
+</ul>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230623225410411.png" alt="image-20230623225410411"></p>
+<h2 id="3-地面线段拟合"><a href="#3-地面线段拟合" class="headerlink" title="3 地面线段拟合"></a>3 地面线段拟合</h2><h3 id="3-1-流程图"><a href="#3-1-流程图" class="headerlink" title="3.1 流程图"></a>3.1 流程图</h3><p>根据每个 $Bin$ 的最低点拟合地面线段 $GroundLine$ ，其论文理论部分相对简单，但代码逻辑相对复杂一些，原论文中的算法伪代码如下：</p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624172909256.png" alt="image-20230624172909256"></p>
+<p>为更好地理解算法逻辑，下面为依据代码所做的流程图。提前进行如下说明：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>binPoint</code></td>
+<td>表示每个Bin中的最低点 <code>MinZPoint(d,z)</code></td>
+</tr>
+<tr>
+<td><code>curBinPoint</code></td>
+<td>当前循环中正在处理的 <code>binPoint</code></td>
+</tr>
+<tr>
+<td><code>firstBinPoint</code></td>
+<td>找到的第一个非空<code>bin</code>中的 <code>binPoint</code></td>
+</tr>
+<tr>
+<td><code>非空bin</code></td>
+<td>有激光点落入该<code>bin</code> 中则非空，<code>非空bin</code> 才有 <code>binPoint</code></td>
+</tr>
+<tr>
+<td><code>linePoints</code></td>
+<td>是一个<code>vector</code>，存储的是当前状态下，用于拟合局部地面线段的备选 <code>binPoint</code></td>
+</tr>
+<tr>
+<td><code>lastBinPoint</code></td>
+<td>上一个入选<code>linePoints</code>的 <code>binPoint</code>，<code>lastBinPoint=linePoints.back()</code></td>
+</tr>
+<tr>
+<td><code>linePoints_size</code></td>
+<td>上面<code>linePoints</code>这个<code>vector</code>的大小，也就是备选 <code>binPoint</code> 的点数量</td>
+</tr>
+<tr>
+<td><code>localGroundLine</code></td>
+<td>利用<code>linePoints</code>中的备选 <code>binPoint</code>拟合出的局部地面线段</td>
+</tr>
+<tr>
+<td><code>groundLines</code></td>
+<td>本算法的最终结果存储，是一个<code>vector</code>，里面元素为一个个线段，<br>每个线段实际保存两个点即可</td>
+</tr>
+</tbody></table>
+<p>基于以上符号的含义来理解以下算法流程。为了便于理解整个算法，以下的判断条件多为简写，如<code>if curBinPoint valid</code>，<code>if localLine good</code> 等，具体的判断条件后文再具体分析，此处先提纲挈领地理解整个地面线段拟合的算法逻辑。</p>
+<p>总的来说，需要带着两个问题：</p>
+<ul>
+<li>满足什么条件的点可以用来拟合地面线段？</li>
+<li>什么条件下，地面线需要中断并重新开启一条线段（以符合不同坡度的地面情况）？</li>
+</ul>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624004950917.png" alt="image-20230624004950917"></p>
+<p>以上流程中，同一颜色的框图代表相同或相近的含义：</p>
+<ul>
+<li>蓝：开始或转入一次循环；</li>
+<li>橙：不同的判断条件；</li>
+<li>绿：拟合地面线段（注意，并不是每次拟合的都是地面线段结果，效果不佳时要剔除相关点再拟合）；</li>
+<li>黄：开始一条新的线。注意两种情况略有不同。<ul>
+<li>第一种，有效点太少且又遇当前点为中断点，则删去前面的少量有效点，从中断点即当前点重新开始；</li>
+<li>第二种实则又分为两种，一是前一个线段有效保存下来，二是前段依然有效点不够，但都是<code>lastBinPoint</code>作为中断点，与第一种情况<code>curBinPoint</code>为中断点略有不同（具体原因，前一个线段有效保存可以理解，但是前段有效点不够的情况似乎与第一种并无二致，原因暂未深究）；</li>
+</ul>
+</li>
+<li>红：保存地面线段，注意，这个步骤<code>groundLines</code>存储的是我们本阶段的终极目标；</li>
+<li>白：其他 less important 步骤，如<code>push、pop</code>等；</li>
+<li>灰：算法起止。</li>
+</ul>
+<h3 id="3-2-判断条件"><a href="#3-2-判断条件" class="headerlink" title="3.2 判断条件"></a>3.2 判断条件</h3><ul>
+<li><strong>if curBinPoint exists ?</strong> </li>
+<li><strong>if linePoints_size ≥ n ？</strong></li>
+</ul>
+<p>这两个比较简单。</p>
+<table>
+<thead>
+<tr>
+<th>判断条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>if curBinPoint exists ? </code></td>
+<td>有激光点落入该<code>bin</code> 中则非空，<br><code>非空bin</code> 有 <code>binPoint</code>，即<code>curBinPoint</code> 存在，反之不存在。</td>
+</tr>
+<tr>
+<td><code>if linePoints_size ≥ n ?</code></td>
+<td><code>linePoints</code>中的<code>binPoint</code>数量大于<code>n</code>表示满足判断条件。</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>if curBinPoint valid ?</strong></li>
+</ul>
+<p>对应上述伪代码为第15行：</p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624200223441.png" alt="image-20230624200223441"></p>
+<p>源代码为（linefit_ground_segmentation&#x2F;src&#x2F;segment.cc: Line 69）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Not enough points. // Add point if valid.</span></span><br><span class="line"><span class="keyword">if</span> (cur_point.d - current_line_points.<span class="built_in">back</span>().d &lt; long_threshold_ &amp;&amp;</span><br><span class="line">    std::<span class="built_in">fabs</span>(current_line_points.<span class="built_in">back</span>().z - cur_ground_height) &lt; max_start_height_) &#123;</span><br><span class="line">    current_line_points.<span class="built_in">push_back</span>(cur_point);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有两个条件需要同时满足（用本文中定义的符号描述，<code>cur_point</code>即本文的<code>curBinPoint</code>，<code>current_line_points</code>即本文的<code>linePoints</code>，<code>current_line_points.back()</code>即本文的<code>lastBinPoint</code>），</p>
+<p>① <code>curBinPoint.d - lastBinPoint.d &lt; long_threshold</code>，当前点和上一个入选<code>linePoints</code>的<code>binPoint</code>的平面距离<code>delta_d</code>小于预设值，此处原作者选取的阈值为 1.0 米；</p>
+<p>② <code>lastBinPoint.height_from_ground &lt; max_start_height</code>，上一个备选<code>binPoint</code>的距地面高度小于预设值，此处原作者选取的阈值为 0.1 米；</p>
+<ul>
+<li><strong>if localLine good ?</strong></li>
+</ul>
+<p>对应上述伪代码为第6行：</p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624201240126.png" alt="image-20230624201240126"></p>
+<p>源代码为（linefit_ground_segmentation&#x2F;src&#x2F;segment.cc: Line 47）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (error &gt; max_error_ ||</span><br><span class="line">    std::<span class="built_in">fabs</span>(cur_line.first) &gt; max_slope_ ||</span><br><span class="line">    (current_line_points.<span class="built_in">size</span>() &gt; <span class="number">2</span> &amp;&amp; std::<span class="built_in">fabs</span>(cur_line.first) &lt; min_slope_) ||</span><br><span class="line">    is_long_line &amp;&amp; std::<span class="built_in">fabs</span>(expected_z - cur_point.z) &gt; max_long_height_) &#123;</span><br><span class="line">    current_line_points.<span class="built_in">pop_back</span>();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>源码中:</p>
+<ul>
+<li><p><code>error</code>：即<code>fiterror</code>，计算<code>linePoints</code>中所有点到拟合直线的距离并取其最大距离作为此拟合误差值；</p>
+</li>
+<li><p><code>cur_line.first</code>：拟合直线的斜率，也即拟合的地面坡度；</p>
+</li>
+<li><p><code>is_long_line</code>：<code>curBinPoint.d - lastBinPoint.d &gt; long_threshold</code>，当前点和上一个备选<code>binPoint</code>的平面距离大于预设值，则<code>is_long_line</code>为<code>true</code>；</p>
+</li>
+<li><p><code>expected_z</code>：当前点在上一个拟合地面线上的Z值</p>
+</li>
+</ul>
+<p>以下四个条件满足任意一个，即表示刚刚拟合的地面线不是一个“好的直线”：</p>
+<ul>
+<li><p>① 拟合误差<code>error</code>大于设定阈值；</p>
+</li>
+<li><p>② 拟合的地面坡度<code>cur_line.first</code>大于设定阈值；</p>
+</li>
+<li><p>③ 拟合点数量<code>linePoints_size ≥3</code> 且 拟合的地面坡度<code>cur_line.first</code>大于设定阈值；</p>
+</li>
+<li><p>④ 同时满足<code>curBinPoint.d-lastBinPoint.d&gt;long_threshold</code>，<br>和<code>abs(expected_z-cur_point.z)&gt;max_long_height</code> 两个阈值条件。</p>
+</li>
+</ul>
+<h2 id="4-地面点云分割"><a href="#4-地面点云分割" class="headerlink" title="4 地面点云分割"></a>4 地面点云分割</h2><p>简单来讲，就是计算激光点到当前及相邻的Segment中的拟合地面线段的投影误差，如果小于设置阈值，则认为是地面点，否则为非地面点。</p>
+<p>此处关键在于找到正确的对应地面线段，要求激光点 $P(r,z)$ 的 $r$ 值在地面线段的起止点区间内 $(r_{min},r_{max})$ 方可认为是对应的地面线段，为了更有效地进行匹配，算法的匹配过程给这个起止区间加上了一个余量（或称为缓冲）<code>kMargin</code>，实际满足的条件为 $r\in(r_{min}-kMargin,\ \ r_{max}+kMargin)$。</p>
+<p>具体步骤如下：</p>
+<ul>
+<li>① 在激光点所在的segment内，匹配地面线段，若匹配到合适的地面线段，则计算投影误差并返回；</li>
+<li>② 若在①中没有成功匹配地面线段，则在邻域segment内，重复①步骤。其中，邻域segment定义为角度相差小于阈值<code>line_search_angle</code> 的左右相邻segment；</li>
+<li>③ 无法匹配地面线段的激光点为非地面点；</li>
+<li>④ 已经匹配地面线段的激光点，投影误差小于阈值 <code>max_dist_to_line</code> 的激光点为地面点，否则为非地面点。</li>
+</ul>
+<h2 id="5-算法参数设置"><a href="#5-算法参数设置" class="headerlink" title="5 算法参数设置"></a>5 算法参数设置</h2><p>前文中涉及到了不少的参数设置，主要是相关阈值，在这里总结一下。</p>
+<p>在源代码中，参数配置文件为 linefit_ground_segmentation_ros&#x2F;launch&#x2F;segmentation_params.yaml</p>
+<p>有以下参数：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">n_threads:</span> <span class="number">4</span>                <span class="comment"># number of threads to use.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">r_min:</span> <span class="number">0.5</span>                  <span class="comment"># minimum point distance.</span></span><br><span class="line"><span class="attr">r_max:</span> <span class="number">50</span>                   <span class="comment"># maximum point distance.</span></span><br><span class="line"><span class="attr">n_bins:</span> <span class="number">120</span>                 <span class="comment"># number of radial bins.</span></span><br><span class="line"><span class="attr">n_segments:</span> <span class="number">360</span>             <span class="comment"># number of radial segments.</span></span><br><span class="line">     </span><br><span class="line"><span class="attr">max_dist_to_line:</span> <span class="number">0.05</span>      <span class="comment"># maximum vertical distance of </span></span><br><span class="line">                            <span class="comment"># point to line to be considered ground.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">sensor_height:</span> <span class="number">1.8</span>          <span class="comment"># sensor height above ground.</span></span><br><span class="line"><span class="attr">min_slope:</span> <span class="number">0.0</span>              <span class="comment"># minimum slope of a ground line.</span></span><br><span class="line"><span class="attr">max_slope:</span> <span class="number">0.3</span>              <span class="comment"># maximum slope of a ground line.</span></span><br><span class="line"><span class="attr">max_fit_error:</span> <span class="number">0.05</span>         <span class="comment"># maximum error of a point during line fit.</span></span><br><span class="line"><span class="attr">long_threshold:</span> <span class="number">1.0</span>         <span class="comment"># distance between points after which </span></span><br><span class="line">                            <span class="comment"># they are considered far from each other.</span></span><br><span class="line"><span class="attr">max_long_height:</span> <span class="number">0.1</span>        <span class="comment"># maximum height change to previous point in long line.</span></span><br><span class="line"><span class="attr">max_start_height:</span> <span class="number">0.2</span>       <span class="comment"># maximum difference to estimated </span></span><br><span class="line">                            <span class="comment"># ground height to start a new line.</span></span><br><span class="line"><span class="attr">line_search_angle:</span> <span class="number">0.1</span>      <span class="comment"># how far to search in angular direction </span></span><br><span class="line">                            <span class="comment"># to find a line [unit: rad].</span></span><br><span class="line"></span><br><span class="line"><span class="attr">gravity_aligned_frame:</span> <span class="string">&quot;&quot;</span>   <span class="comment"># Frame which has its z axis aligned with gravity. </span></span><br><span class="line">                            <span class="comment"># (Sensor frame if empty.)</span></span><br><span class="line"></span><br><span class="line"><span class="attr">latch:</span> <span class="literal">false</span>                <span class="comment"># latch output topics or not</span></span><br><span class="line"><span class="attr">visualize:</span> <span class="literal">false</span>            <span class="comment"># visualize segmentation result - USE ONLY FOR DEBUGGING</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="6-效果展示"><a href="#6-效果展示" class="headerlink" title="6 效果展示"></a>6 效果展示</h2><p>论文中的效果展示：</p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230701232839694.png" alt="image-20230701232839694"></p>
+<h2 id="7-其他"><a href="#7-其他" class="headerlink" title="7 其他"></a>7 其他</h2><p>博文 <a target="_blank" rel="noopener" href="https://blog.csdn.net/lovelyaiq/article/details/118826534">地面分割：Fast Segmentation of 3D Point Clouds for Ground Vehicles_TiRan_Yang的博客</a> 中举了一个实例，对代码进行了解读，可参看。</p>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lidar/" rel="tag">lidar</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/segmentation/" rel="tag">segmentation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%9C%B0%E9%9D%A2%E5%88%86%E5%89%B2/" rel="tag">地面分割</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2023/06/30/2023-06-30-segmentation-02/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            地面分割算法（二）：Ground_removal in LeGO-LOAM
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2023/06/20/2023-06-20-LSM/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">SLAM数学基础（六）：最小二乘法</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

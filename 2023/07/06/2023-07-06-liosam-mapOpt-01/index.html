@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>LIOSAM 工程是怎么跑起来的 |  Monicakaa</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      
+<link rel="stylesheet" href="/css/fonts/remixicon.css">
+
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.staticfile.org/pace/1.2.4/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+        <style>
+            .outer {
+                margin-left: 20%;
+            }
+        </style>
+      <section class="outer">
+  <article
+  id="post-2023-07-06-liosam-mapOpt-01"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  LIOSAM 工程是怎么跑起来的
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2023/07/06/2023-07-06-liosam-mapOpt-01/" class="article-date">
+  <time datetime="2023-07-05T16:00:00.000Z" itemprop="datePublished">2023-07-06</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SLAM/">SLAM</a> / <a class="article-category-link" href="/categories/SLAM/LIOSAM/">LIOSAM</a>
+  </div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>liosam 工程是怎么跑起来的</p>
+<p>LIOSAM 的中 Topic 与 node 的关联图，咋一看非常之多，十分骇人，但是从捋出重要 Topic 之后，就简练的多了，关注以下这些：</p>
+<p>&#x2F;lio_sam&#x2F;mapping&#x2F;odometry_incremental：节点 </p>
+<p>rosgraph-more-topics</p>
+<p>rosgraph-less-topics</p>
+<h2 id="后端优化中雷达位姿的初值获取"><a href="#后端优化中雷达位姿的初值获取" class="headerlink" title="后端优化中雷达位姿的初值获取"></a>后端优化中雷达位姿的初值获取</h2><p>LIOSAM 中的 lidar_link 其实也就是base_link，它与机器人场景中的机器人、自动驾驶场景的车辆是类似的。</p>
+<p>在优化问题中，一个好的初值是非常重要的。LIOSAM在启动过程中，不同的状态下位姿初值获取选用了不同的方案。</p>
+<h3 id="第一帧"><a href="#第一帧" class="headerlink" title="第一帧"></a>第一帧</h3><p>当接收到第一帧点云，将IMU原始数据中的角度值作为初始姿态，位置直接用（0，0，0）。位姿初始化在文件 <code>mapOptmization.cpp</code> 中， ， 代码如下，</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">updateInitialGuess</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">    <span class="type">static</span> Eigen::Affine3f lastImuTransformation;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    <span class="keyword">if</span> (cloudKeyPoses3D-&gt;points.<span class="built_in">empty</span>())<span class="comment">// lidar trajectory</span></span><br><span class="line">    &#123;</span><br><span class="line">        transformTobeMapped[<span class="number">0</span>] = cloudInfo.imuRollInit;<span class="comment">// 时间早于 point_cloud, 且最接近一帧的 imu 数据中的RPY</span></span><br><span class="line">        transformTobeMapped[<span class="number">1</span>] = cloudInfo.imuPitchInit;</span><br><span class="line">        transformTobeMapped[<span class="number">2</span>] = cloudInfo.imuYawInit;</span><br><span class="line">        <span class="keyword">if</span> (!useImuHeadingInitialization)</span><br><span class="line">            transformTobeMapped[<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        lastImuTransformation = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); <span class="comment">// save imu before return;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述 updateInitialGuess() 函数中：</p>
+<p>位姿保存在变量 transformTobeMapped[] 中，且只对角度赋值，位置值保留变量的初始化值；代码如下；</p>
+<p>角度的赋初值：cloudInfo.imuRollInit &#x2F; imuPitchInit &#x2F; imuYawInit 的获取在文件 imageProjection.cpp 中，存于消息 cloud_info 中与其他消息一并发布；代码如下；</p>
+<p>另还有两个参数 incrementalOdometryAffineFront 和 lastImuTransformation，lastImuTransformation 用于下一帧的雷达初始化（详见下一小节）；incrementalOdometryAffineFront在后续生成平滑的 lidar Odometry 中有应用。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">allocateMemory</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;    </span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">6</span>; ++i)&#123;</span><br><span class="line">        transformTobeMapped[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//// @file： LIO-SAM/src/imageProjection.cpp    </span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">imuDeskewInfo</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...        </span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="type">int</span>)imuQueue.<span class="built_in">size</span>(); ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        sensor_msgs::Imu thisImuMsg = imuQueue[i];</span><br><span class="line">        <span class="type">double</span> currentImuTime = thisImuMsg.header.stamp.<span class="built_in">toSec</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// get roll, pitch, and yaw estimation for this scan</span></span><br><span class="line">        <span class="comment">// 持续更新 rpy 直到 IMU 时间为小于雷达时间且相距最近</span></span><br><span class="line">        <span class="keyword">if</span> (currentImuTime &lt;= timeScanCur)</span><br><span class="line">            <span class="built_in">imuRPY2rosRPY</span>(&amp;thisImuMsg, &amp;cloudInfo.imuRollInit, &amp;cloudInfo.imuPitchInit, &amp;cloudInfo.imuYawInit);</span><br><span class="line">        <span class="keyword">if</span> (currentImuTime &gt; timeScanEnd + <span class="number">0.05</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上述 imuDeskewInfo() 中的 imuRPY2rosRPY() 函数（line 23）定义在 utility.h 中，函数功能简单，只将 IMU_raw 中的 orientation 作格式转换，不多赘述。</p>
+<h3 id="第二帧"><a href="#第二帧" class="headerlink" title="第二帧"></a>第二帧</h3><p>收到第二帧点云后，判断其不满足时间间隔阈值，直接返回。</p>
+<h3 id="第三帧"><a href="#第三帧" class="headerlink" title="第三帧"></a>第三帧</h3><p>收到点云后，进入函数 updateInitialGuess() 中，不是第一帧后只需要关注后面的两个判断条件，<code>cloudInfo.imuAvailable, cloudInfo.odomAvailable</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">updateInitialGuess</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    <span class="keyword">if</span> (cloudKeyPoses3D-&gt;points.<span class="built_in">empty</span>())&#123;...&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.odomAvailable == <span class="literal">true</span>)&#123;...&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.imuAvailable == <span class="literal">true</span>)&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>imuAvailable,odomAvailable </code> 这两个参数同样来自于文件 <code>imageProjection.cpp  </code>  ：</p>
+<ul>
+<li><p>参数 <code>cloudInfo.imuAvailable</code> 是指是否收到用于畸变纠正的 <code>IMU</code> 原始数据，是一开始就有的；</p>
+</li>
+<li><p>参数 <code>cloudInfo.odomAvailable</code> 是指是否收到用于畸变纠正的 <code>IMU odometry</code> ，而这个 Topic 是在收到节点 <code>mapOptmization</code> 发出的 <code>lidar odometry</code> 后再下一帧处理所得（收到第一帧需要初始化）；</p>
+</li>
+</ul>
+<p>因此进入第三个case，<code>if (cloudInfo.imuAvailable == true)&#123;...&#125;</code> 。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="type">void</span> updateInitialGue当前帧的位姿初值 `transFinal=transTobe * transIncre` <span class="built_in">ss</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// save current transformation before any processing</span></span><br><span class="line">    incrementalOdometryAffineFront = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// initialization</span></span><br><span class="line">    ...    </span><br><span class="line">    <span class="comment">// use imu pre-integration estimation for pose guess</span></span><br><span class="line">    ...    </span><br><span class="line">    <span class="comment">// use imu incremental estimation for pose guess (only rotation)</span></span><br><span class="line">    <span class="keyword">if</span> (cloudInfo.imuAvailable == <span class="literal">true</span>)&#123;        </span><br><span class="line">        <span class="built_in">ROS_WARN</span>(<span class="string">&quot;Guess init, imuAvailable&quot;</span>);</span><br><span class="line">        Eigen::Affine3f transBack = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);</span><br><span class="line">        Eigen::Affine3f transIncre = lastImuTransformation.<span class="built_in">inverse</span>() * transBack;</span><br><span class="line"></span><br><span class="line">        Eigen::Affine3f transTobe = <span class="built_in">trans2Affine3f</span>(transformTobeMapped);</span><br><span class="line">        Eigen::Affine3f transFinal = transTobe * transIncre;</span><br><span class="line">        pcl::<span class="built_in">getTranslationAndEulerAngles</span>(transFinal, transformTobeMapped[<span class="number">3</span>], transformTobeMapped[<span class="number">4</span>], transformTobeMapped[<span class="number">5</span>], </span><br><span class="line">                                                      transformTobeMapped[<span class="number">0</span>], transformTobeMapped[<span class="number">1</span>], transformTobeMapped[<span class="number">2</span>]);</span><br><span class="line"></span><br><span class="line">        lastImuTransformation = pcl::<span class="built_in">getTransformation</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); <span class="comment">// save imu before return;</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这一段代码的逻辑是，通过结合上一帧的雷达位姿和两帧雷达位姿的增量来计算而得，获取当前帧的雷达位姿。</p>
+<p>上一帧的雷达位姿初值 $T_{last_init}$ ：上一帧处理过程中存于变量 <code>lastImuTransformation</code> ；</p>
+<p>上一帧雷达位姿优化值 $T_{last_opt}$ ：上一帧的优化位姿，存于 <code>transformTobeMapped[]</code> ，格式转换得到 <code>transTobe</code> ；</p>
+<p>当前帧雷达位姿临时值 $T_{cur_temp}$ ：当前帧从 <code>IMU</code>原始数据中获取的位姿，存于 <code>transBack</code> ；</p>
+<p>当前帧的雷达位姿初值 $T_{cur_init}$ ：也就是当前函数的待求值，前帧的位姿初值 <code>transFinal=transTobe * transIncre</code> &gt;。</p>
+<p>两帧之间的位姿增量 $T_{between}$ ：上一帧位姿初值 $T_{last-init}$ 和当前帧雷达位姿临时值 $T_{cur_temp}$ 之间的增量（<code>transIncre</code>）；</p>
+<p>用公式表示为：<br>$$<br>T_{between}&#x3D;T_{last_init}^{-1}T_{cur_temp}\T_{cur_init}&#x3D;T_{last_opt}T_{between}<br>$$<br>得到当前帧位姿初值后，再度存于 <code>transformTobeMapped[]</code> 中对其进行更新，这个参数非常重要的。</p>
+<p>并同时更新<code>lastImuTransformation</code> 用于下一帧的处理。</p>
+<p>注1：前面的【当前帧雷达位姿临时值】是笔者自己起的一个名字，为区别于用于后端优化的初值，而用了临时值的说法。</p>
+<p>注2：这部分应用到有关矩阵右乘的知识点，主要多加注意，可参考这个问题 <a target="_blank" rel="noopener" href="https://www.zhihu.com/question/263660493">矩阵左乘，右乘到底是什么意思？</a>中 <a target="_blank" rel="noopener" href="https://www.zhihu.com/people/yan-fei-can-yue-tian-50">糖糖不是堂</a> 的回答。</p>
+<h3 id="第四帧"><a href="#第四帧" class="headerlink" title="第四帧"></a>第四帧</h3><p>同第二帧情形，不满足时间间隔阈值，直接返回。</p>
+<h3 id="第五帧"><a href="#第五帧" class="headerlink" title="第五帧"></a>第五帧</h3><p>到此时，</p>
+<h2 id="雷达里程计的最高频率"><a href="#雷达里程计的最高频率" class="headerlink" title="雷达里程计的最高频率"></a>雷达里程计的最高频率</h2><p>雷达里程计并不是对每一帧点云都进行处理，这里有一个时间阈值的判断。</p>
+<p><a href="">《后端优化中 雷达 位姿的初始化》</a>中所说的第二帧，是指满足时间间隔要求的第二帧，实为第三帧，收到的第二帧点云与第一帧</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//// @file： LIO-SAM/src/mapOptmization.cpp</span></span><br><span class="line"><span class="keyword">if</span> (timeLaserInfoCur - timeLastProcessing &gt;= mappingProcessInterval)&#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mappingProcessInterval</code>的默认参数是0.15s，所以在默认参数下，雷达里程计不会超过1&#x2F;0.15Hz</p>
+<p>参数配置文件： <code>LIO-SAM/config/params.yaml</code></p>
+<h2 id="Q-amp-A"><a href="#Q-amp-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h2><ul>
+<li><p>每个 Topic 具体发布的数据什么含义</p>
+</li>
+<li><p>mapOpt 中的lio_sam&#x2F;mapping&#x2F;odometry 与 lio_sam&#x2F;mapping&#x2F;odometry_incremental有什么区别与联系?</p>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/TixiaoShan/LIO-SAM/issues/92">https://github.com/TixiaoShan/LIO-SAM/issues/92</a></p>
+<ul>
+<li><p>odometry&#x2F;imu 与 odometry&#x2F;imu_incremental</p>
+<p>odometry&#x2F;imu_incremental，在imagerojection发布</p>
+<p>odometry&#x2F;imu，在transformusion中，</p>
+</li>
+<li><p>transformTobeMapped 的初始化与优化历程</p>
+</li>
+<li><p>gtsam 中 的先验因子和 Values 有什么区别</p>
+</li>
+<li><p>imgProject 中用于畸变纠正的 IMU 数据 Odom 数据</p>
+<p>Odom 数据 为什么用 IMU 里程计，而不用 lidar Odom？因为后者滞后</p>
+<p>roll，pitch，yaw 的纠正为什么用原始IMU，而不用  IMU 里程计 中的orientation？ 尚不清楚。</p>
+</li>
+<li><p>addOdomFactor() 为何首帧的噪声模型参数的yaw为 PI*PI？</p>
+</li>
+</ul>
+ 
+      <!-- reward -->
+      
+        <div id="reword-out" style="border-top-width: 20px;padding-top: 30px;">
+            <div id="reward-btn" style="
+                margin-bottom: 0px;
+                margin-top: 0px;
+                ">Donate
+            </div>
+        </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <footer class="article-footer">
+       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LIOSAM/" rel="tag">LIOSAM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SLAM/" rel="tag">SLAM</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF%E4%BC%98%E5%8C%96/" rel="tag">后端优化</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+    
+      <a href="/2023/06/30/2023-06-30-segmentation-02/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">地面分割算法（二）：Ground_removal in LeGO-LOAM</div>
+      </a>
+    
+  </nav>
+
+  
+   
+  
+   
+    <script src="https://cdn.staticfile.org/twikoo/1.4.18/twikoo.all.min.js"></script>
+    <div id="twikoo" class="twikoo"></div>
+    <script>
+        twikoo.init({
+            envId: ""
+        })
+    </script>
+ 
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+        <li style="
+            padding-bottom: 0px;
+            width: 30px;
+            padding-right: 5px;
+        ">
+        <img src="/images/favicon.ico">
+      </li>
+      <li>
+        &copy;
+        2023
+        <!-- <i class="ri-heart-fill heart_icon"></i> Monicakaa -->
+        , 
+        Monicakaa
+        .
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle">
+    <style>
+        .navbar-toggle {
+            background-color: rgba(0,0,0,.05);
+        }
+    </style>
+</button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer.png" alt="Monicakaa"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      <a class="nav-item-link" target="_blank" href="https://github.com/hjh0920">
+        <i class="ri-github-fill"></i>
+        <!-- <i class="ri-github-line"></i> -->
+      </a>
+    </li>
+  </ul>
+  <style>
+    .navbar .nav .nav-item-link {
+        display: block;
+        padding: 1rem;
+        color: #918888;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+      <style>
+        .sidebar {
+          background-color: rgba(0,0,0,.1);
+        }
+      </style>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".tocbot",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".article-entry",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    // Smooth scrolling enabled.
+    scrollSmooth: true,
+    // If there is a fixed article scroll container, set to calculate titles' offset
+    scrollContainer: "main",
+    // Element to add the positionFixedClass to.
+    positionFixedSelector: ".tocbot",
+    // Fixed position class to add to make sidebar fixed after scrolling
+    // down past the fixedSidebarOffset.
+    positionFixedClass: "is-position-fixed",
+    // fixedSidebarOffset can be any number but by default is set
+    // to auto which sets the fixedSidebarOffset to the sidebar
+    // element's offsetTop from the top of the document on init.
+    fixedSidebarOffset: "auto",
+    // How many heading levels should not be collpased.
+    // For example, number 6 will show everything since
+    // there are only 6 heading levels and number 0 will collpase them all.
+    // The sections that are hidden will open
+    // and close as you scroll to headings within them.
+    // collapseDepth: "is-collapsed",
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.staticfile.org/jquery-modal/0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.staticfile.org/justifiedGallery/3.8.1/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.staticfile.org/photoswipe/4.1.3/default-skin/default-skin.min.css">
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="https://cdn.staticfile.org/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+ <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+  });
+
+  MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/MathJax.js"></script>
+<script src="https://cdn.staticfile.org/mathjax/2.7.7/config/TeX-AMS-MML_HTMLorMML-full.js"></script>
+<script>
+  var ayerConfig = {
+    mathjax: true,
+  };
+</script>
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+
+<!-- ClickLove -->
+ 
+<script src="/js/clickLove.js"></script>
+ 
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.staticfile.org/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>
