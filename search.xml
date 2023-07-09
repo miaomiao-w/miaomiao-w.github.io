@@ -13,30 +13,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>书写，是为了铭记？还是忘记？</title>
-    <url>/2019/02/28/2019-02-28-to-remember-or-not/</url>
-    <content><![CDATA[<p>我从小语文成绩不好，却一直有写写划划的习惯。</p>
-<p>年纪小的时候，思考的不多，看的书也不够多，那时候的写日记任务对于我来讲是一项挤牙膏般的折磨，输出不了；另一方面，感叹于世界的缤纷和多彩，有很多未知想要去探索，到处都是可以学习的地方。</p>
-<p>但是又察觉到获取信息的方式的匮乏，所以那时就有摘录的习惯，报纸上、杂志上、课外书上、甚至于寒暑假作业上看到的知识点都想要记下来，或者抄录下来，或者直接剪下来贴在本上。家里有不少那时候留下来的本本。</p>
-<p>所以，我喜欢记笔记，到了后来，又喜欢把看的书上的原句或者想法记录下来。我想，这些书写和记录，都是想要铭记，记住看过的东西，记住有过的想法，记住曾经的精彩。</p>
-<p>上高中的时候，老师们经常说的一句话是，学习是先把书本读厚，然后再慢慢的读薄，你就真的是吃透了它了。</p>
-<p>这话很好理解，越读越厚，是丰富了书本的知识点，所谓举一反三、融会贯通，这是不断累积的过程；而越读越薄，则是消化这些知识点，把他们自然融入到脑中的知识体系中，成为有机的一部分，这是真正习得的过程。</p>
-<p>最近，和朋友开玩笑说这半年来思考的东西比前半生都多，关于亲情、爱情、工作、婚姻、家庭、生活、理想、意义等等。</p>
-<p>话题多半是沉重和严肃的话题，想多了反而是都没有意义了。有心或无意，思考过的东西，存于脑中，或许不会一直占据脑海中心，时不时，总是会挠你一下，多了之后，难免不堪其扰。</p>
-<p>这时候，经过有序的组织，写下来之后，仿佛是完成了一个又一个任务，可以放诸脑后，可以 move on 了，有迹可循就不怕忘记它，也就可以光明正大的忘记它，倒是真正轻松了很多。</p>
-<p>这就像那个读书越读越薄的过程，占据的脑容量越来越小，不用想起，有可能是化成了另外一种形态。</p>
-<p>那么，这些书写和抒发应该，是在整装待发，是要轻装上阵。</p>
-<p><img src="/MD_IMG/2019-02-28-to-remember-or-not.assets/image-20230602220731398.png" alt="image-20230602220731398"></p>
-]]></content>
-      <categories>
-        <category>随笔</category>
-        <category>杂谈</category>
-      </categories>
-      <tags>
-        <tag>杂谈</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>你闻见过么？阳光的味道。</title>
     <url>/2019/09/07/2019-09-07-sunlight/</url>
     <content><![CDATA[<p>家在南方的人，想必都有这样一个印象：冬天，赶着天气放晴，阳光很好的时候，必然有那么几天会把家里的衣物被褥都翻出来，去见见太阳。</p>
@@ -108,18 +84,18 @@
 </ul>
 <h3 id="3-2-正交矩阵"><a href="#3-2-正交矩阵" class="headerlink" title="3.2 正交矩阵"></a>3.2 正交矩阵</h3><p><code>&lt;TODO&gt;</code></p>
 <h3 id="3-3-投影矩阵"><a href="#3-3-投影矩阵" class="headerlink" title="3.3 投影矩阵"></a>3.3 投影矩阵</h3><p><code>&lt;TODO&gt;</code></p>
-<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="4-SLAM数学基础-系列笔记"><a href="#4-SLAM数学基础-系列笔记" class="headerlink" title="4 SLAM数学基础*系列笔记"></a>4 SLAM数学基础*系列笔记</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <p align="center">---END---</p>
@@ -139,6 +115,30 @@
         <tag>SLAM数学基础</tag>
         <tag>向量</tag>
         <tag>特殊矩阵</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>书写，是为了铭记？还是忘记？</title>
+    <url>/2019/02/28/2019-02-28-to-remember-or-not/</url>
+    <content><![CDATA[<p>我从小语文成绩不好，却一直有写写划划的习惯。</p>
+<p>年纪小的时候，思考的不多，看的书也不够多，那时候的写日记任务对于我来讲是一项挤牙膏般的折磨，输出不了；另一方面，感叹于世界的缤纷和多彩，有很多未知想要去探索，到处都是可以学习的地方。</p>
+<p>但是又察觉到获取信息的方式的匮乏，所以那时就有摘录的习惯，报纸上、杂志上、课外书上、甚至于寒暑假作业上看到的知识点都想要记下来，或者抄录下来，或者直接剪下来贴在本上。家里有不少那时候留下来的本本。</p>
+<p>所以，我喜欢记笔记，到了后来，又喜欢把看的书上的原句或者想法记录下来。我想，这些书写和记录，都是想要铭记，记住看过的东西，记住有过的想法，记住曾经的精彩。</p>
+<p>上高中的时候，老师们经常说的一句话是，学习是先把书本读厚，然后再慢慢的读薄，你就真的是吃透了它了。</p>
+<p>这话很好理解，越读越厚，是丰富了书本的知识点，所谓举一反三、融会贯通，这是不断累积的过程；而越读越薄，则是消化这些知识点，把他们自然融入到脑中的知识体系中，成为有机的一部分，这是真正习得的过程。</p>
+<p>最近，和朋友开玩笑说这半年来思考的东西比前半生都多，关于亲情、爱情、工作、婚姻、家庭、生活、理想、意义等等。</p>
+<p>话题多半是沉重和严肃的话题，想多了反而是都没有意义了。有心或无意，思考过的东西，存于脑中，或许不会一直占据脑海中心，时不时，总是会挠你一下，多了之后，难免不堪其扰。</p>
+<p>这时候，经过有序的组织，写下来之后，仿佛是完成了一个又一个任务，可以放诸脑后，可以 move on 了，有迹可循就不怕忘记它，也就可以光明正大的忘记它，倒是真正轻松了很多。</p>
+<p>这就像那个读书越读越薄的过程，占据的脑容量越来越小，不用想起，有可能是化成了另外一种形态。</p>
+<p>那么，这些书写和抒发应该，是在整装待发，是要轻装上阵。</p>
+<p><img src="/MD_IMG/2019-02-28-to-remember-or-not.assets/image-20230602220731398.png" alt="image-20230602220731398"></p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>杂谈</category>
+      </categories>
+      <tags>
+        <tag>杂谈</tag>
       </tags>
   </entry>
   <entry>
@@ -210,18 +210,18 @@
 <p>【举例】实数乘法运算中，互为倒数的两个数互称逆元，2和1&#x2F;2互为逆元，1和其本身互为逆元;</p>
 </li>
 </ul>
-<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="4-SLAM数学基础-系列笔记s"><a href="#4-SLAM数学基础-系列笔记s" class="headerlink" title="4 SLAM数学基础*系列笔记s"></a>4 SLAM数学基础*系列笔记s</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <hr>
@@ -318,18 +318,18 @@
 <p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png" alt="image-20230608235128283"></p>
 <p>记为：</p>
 <p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png" alt="image-20230608235219900"></p>
-<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="4-SLAM数学基础-系列笔记"><a href="#4-SLAM数学基础-系列笔记" class="headerlink" title="4 SLAM数学基础*系列笔记"></a>4 SLAM数学基础*系列笔记</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <p align="center">---END---</p>
@@ -397,18 +397,18 @@
 <p>此外，在最大后验估计中，似然函数同样扮演着重要的角色，它是计算后验分布时的一部分。具体而言，在最大后验估计中，我们需要找到一个能够最大化后验分布的参数值，而后验分布可以通过似然函数和先验分布进行计算。</p>
 <p>后验概率 $p(\theta\vert{}X)$ 通常由 $P(\theta\vert{}X)&#x3D;\frac{P(X\vert{}\theta)P(\theta)}{P(X)}$ 计算而得，其中 $P(X\vert{}\theta)$ 就是似然函数。</p>
 <h2 id="5-EM算法"><a href="#5-EM算法" class="headerlink" title="5 EM算法"></a>5 EM算法</h2><p><code>&lt;TODO&gt;</code></p>
-<h2 id="6-【SLAM数学基础】系列笔记"><a href="#6-【SLAM数学基础】系列笔记" class="headerlink" title="6 【SLAM数学基础】系列笔记"></a>6 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="6-SLAM数学基础-系列笔记"><a href="#6-SLAM数学基础-系列笔记" class="headerlink" title="6 SLAM数学基础*系列笔记"></a>6 SLAM数学基础*系列笔记</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <hr>
@@ -482,18 +482,18 @@
 <p>最大化后验概率求参数 $\theta$ 的估计值的方法，就是最大后验估计（MAP estimation）。</p>
 <p>在一些数据较少且参数维度较高的问题中，最大后验估计算法相对于极大似然估计、普通最小二乘法等其他估计算法，能够通过先验概率信息有效避免过拟合和欠拟合等问题，提高模型的泛化能力。</p>
 <p>当数据量或样本量非常大时，极大似然估计与最大后验估计是殊途同归的。</p>
-<h2 id="4-【SLAM数学基础】系列笔记"><a href="#4-【SLAM数学基础】系列笔记" class="headerlink" title="4 【SLAM数学基础】系列笔记"></a>4 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="4-SLAM数学基础-系列笔记"><a href="#4-SLAM数学基础-系列笔记" class="headerlink" title="4 SLAM数学基础*系列笔记"></a>4 SLAM数学基础*系列笔记</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <hr>
@@ -533,18 +533,18 @@
 <p>早在19世纪，勒让德就认为依据“<strong>残差的平方和最小</strong>”估计出来的模型是最接近真实情形的。这也就是最小二乘原理，按照最小二乘原理的要求，认为“最佳”地拟合于各观测点的估计曲线，应使各观测点到该直线的偏差的平方和达到最小。</p>
 <p>在众多的“最佳”中，为什么选择“<strong>残差的平方和最小</strong>”呢？这里暂且不表，后续再说。</p>
 <h2 id="3-最小二乘的多维形式"><a href="#3-最小二乘的多维形式" class="headerlink" title="3 最小二乘的多维形式"></a>3 最小二乘的多维形式</h2><p>\&#96;&#96;define`</p>
-<h2 id="4-最小二乘估计与极大似然估计"><a href="#4-最小二乘估计与极大似然估计" class="headerlink" title="4 最小二乘估计与极大似然估计"></a>4 最小二乘估计与极大似然估计</h2><h2 id="5-最小二乘问题的解法"><a href="#5-最小二乘问题的解法" class="headerlink" title="5 最小二乘问题的解法"></a>5 最小二乘问题的解法</h2><h2 id="6-【SLAM数学基础】系列笔记"><a href="#6-【SLAM数学基础】系列笔记" class="headerlink" title="6 【SLAM数学基础】系列笔记"></a>6 【SLAM数学基础】系列笔记</h2><ul>
-<li><p><a href="https://miaomiao-w.github.io/posts/vector/">SLAM数学基础（一）：向量与矩阵</a></p>
+<h2 id="4-最小二乘估计与极大似然估计"><a href="#4-最小二乘估计与极大似然估计" class="headerlink" title="4 最小二乘估计与极大似然估计"></a>4 最小二乘估计与极大似然估计</h2><h2 id="5-最小二乘问题的解法"><a href="#5-最小二乘问题的解法" class="headerlink" title="5 最小二乘问题的解法"></a>5 最小二乘问题的解法</h2><h2 id="6-SLAM数学基础-系列笔记"><a href="#6-SLAM数学基础-系列笔记" class="headerlink" title="6 SLAM数学基础*系列笔记"></a>6 SLAM数学基础*系列笔记</h2><ul>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/transform/">SLAM数学基础（二）：坐标转换</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/05/2023-06-05-transform/">SLAM数学基础（二）：坐标转换</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/07/2023-06-07-probability/">SLAM数学基础（三）：概率论基础概念及相关公式</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/12/2023-06-12-MLE/">SLAM数学基础（四）：理解极大似然估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/19/2023-06-19-MAP/">SLAM数学基础（五）：理解最大后验概率估计</a></p>
 </li>
-<li><p><a href="https://miaomiao-w.github.io/posts/LSM/">SLAM数学基础（六）：最小二乘法</a></p>
+<li><p><a href="https://miaomiao-w.github.io/2023/06/20/2023-06-20-LSM/">SLAM数学基础（六）：最小二乘法</a></p>
 </li>
 </ul>
 <hr>
@@ -752,6 +752,86 @@
       </tags>
   </entry>
   <entry>
+    <title>地面分割算法（二）：Ground_removal in LeGO-LOAM</title>
+    <url>/2023/06/30/2023-06-30-segmentation-02/</url>
+    <content><![CDATA[<p>paper: <a href="https://ieeexplore.ieee.org/abstract/document/8594299">LeGO-LOAM: Lightweight and Ground-Optimized Lidar Odometry and Mapping on Variable Terrain</a></p>
+<p>Github: <a href="https://github.com/RobustFieldAutonomyLab/LeGO-LOAM">LeGO-LOAM - (RobustFieldAutonomyLab)</a></p>
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h2><p>在LeGO-LOAM中，Ground removal 部分引用了上文 <a href="https://miaomiao-w.github.io/posts/segmentation-01/">地面分割算法（一）：linefit_ground_segmentation</a> 中介绍的论文 <a href="https://ieeexplore.ieee.org/document/5548059/figures#figures">Fast segmentation of 3D point clouds for ground vehicles</a>，但只是用了其中考虑地面坡度的思想，具体的代码实现有非常大的区别，包括点云的结构化方式和具体的地面滤除实施，并且代码非常的简化精炼。</p>
+<p>Ground removal 部分的核心代码位于 LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp 文件中。 主要有两部分：点云结构化 <code>projectPointCloud()</code> 和地面滤除 <code>groundRemoval()</code>。</p>
+<h2 id="2-点云结构化"><a href="#2-点云结构化" class="headerlink" title="2 点云结构化"></a>2 点云结构化</h2><ul>
+<li><strong>主要原理</strong></li>
+</ul>
+<p>根据每个点的水平角度和垂直角度，再预先设置两个方向的角度分辨率，可计算得到每个点在这两个方向上的索引，将点云重新映射为基于图像的组织方式。</p>
+<p>核心代码所在：<code>LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</code></p>
+<ul>
+<li><strong>角度分辨率的设置</strong></li>
+</ul>
+<p>可以参考激光雷达设备手册上的参数，一般都有关于激光点云在水平和垂直两个方向上的角度分辨率，可直接将其作为我们需要的阈值，这样可以最大程度保证每个点都能有效利用。事实上，也可以通过这两个阈值的设置（给定一个更大的值，如2倍于设备本身的角度分辨率），在点云映射的同时达到降采样的目的，这个可以根据实际需求。</p>
+<p>源码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_x = <span class="number">0.2</span>; <span class="comment">// degree</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_y = <span class="number">2.0</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>计算水平角和垂直角</strong></li>
+</ul>
+<p>直接基于点坐标计算即可。垂直角$\theta_{v}$ ，水平角$\theta_{h}$ 。<br>$$<br>{\theta_{v}}<em>i&#x3D;\arctan{(\frac{z_i}{\sqrt{x_i^2+y_i^2}})} \\<br>{\theta</em>{h}}_i&#x3D;\arctan{(\frac{x_i}{y_i})}<br>$$<br>注：以上水平角公式是LeGO-LOAM中的计算方法，这个与坐标系定义和水平角起始方向选取有关。这里是以激光雷达坐标系的y轴正方向为0。这里用 $\arctan{(\frac{x_i}{y_i})}$ 还是 $\arctan{(\frac{y_i}{x_i})}$ 来计算依据实际需求而定。</p>
+<p>源码：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line"><span class="type">float</span> distance = <span class="built_in">sqrt</span>(thisPoint.x * thisPoint.x + thisPoint.y * thisPoint.y);</span><br><span class="line">verticalAngle = <span class="built_in">atan2</span>(thisPoint.z, distance) * <span class="number">180</span> / M_PI;</span><br><span class="line">horizonAngle = <span class="built_in">atan2</span>(thisPoint.x, thisPoint.y) * <span class="number">180</span> / M_PI;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<ul>
+<li><strong>计算激光点在图像上的坐标</strong></li>
+</ul>
+<p>这个坐标也就是上述【主要原理】中所讲的索引值。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line">rowIdn = (verticalAngle + ang_bottom) / ang_res_y;</span><br><span class="line">columnIdn = -<span class="built_in">round</span>((horizonAngle<span class="number">-90.0</span>)/ang_res_x) + Horizon_SCAN/<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>ang_bottom</code> 的引入和<code>-90.0</code>、<code>+ Horizon_SCAN/2</code> 都是为了将索引值转化为大于等于0的正整数，以符合图像中坐标的定义，也正是其所谓索引。</p>
+<p>特别地，如果是机械雷达，<code>rowIdn</code> 其实就是 <code>ring</code>，可以免去这部分的计算，直接将 <code>ring</code> 值赋给 <code>rowIdn</code> 即可。</p>
+<ul>
+<li><strong>举例说明</strong></li>
+</ul>
+<p>以机械雷达为例：</p>
+<p>图像行：每一线激光点就是图像中的一行点，并且图像中的任意一行的首尾其实也是相邻的，这点在后续的点云聚类中有体现（不在此文的地面点云分割范围）；</p>
+<p>图像列：下图中两圈表示机械雷达的两线点云，红框中是同一个方向的分属于两线的两个点，映射到图像中就是同一列中相邻的两个像素点。</p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png" alt="image-20230701184940252"></p>
+<h2 id="3-地面滤除"><a href="#3-地面滤除" class="headerlink" title="3 地面滤除"></a>3 地面滤除</h2><p>LeGO-LOAM中地面滤除算法非常简单。</p>
+<p>从靠近激光雷达的点开始判断。对于任意当前一点，再取出下一点（下一行中同一列的激光点），计算这两个点形成的坡度大小，再依据给定的坡度阈值（文中取值为10度），判断其是否为地面点。</p>
+<p>激光点是有可能有无效点的，没有收到回波的点一般存为Nan点，那么如果当前或者下一点是无效点，这个坡度值就没办法计算了，那么当前点就标记为 -1；</p>
+<p>对于正常的两个点，如果计算坡度小于阈值，则两点同为地面点，标记为 1；</p>
+<p>如果计算坡度大于阈值，则两点均为非地面点，标记为 0。</p>
+<p>结束了，就这么简单。</p>
+<p>可能会有人要问了，那如果是一个障碍物目标，它的上表面比较平整，不是就被误判为地面点了吗？</p>
+<p>是这样，肯定是有这个的概率的。但是本文的地面分割是为了更好地做后续的特征匹配的工作，这里不是为了做障碍物识别，所以这一点误判影响并不大；并且，这些误判点不一定会被识别为特征点，可以说又降低了其影响；再者，论文中的实验大多是周围是植被的环境，且安装位置也比较低，不太容易出现上面所说的这种情况。</p>
+<p>所以要注意，如果是用于自动驾驶的避障中，可能要多关注这个问题。特别是安装在巴士顶部的激光雷达，能够看到前车的顶部，特别是挂车后的拖挂平板这种，可能就漏掉了。这是需要注意的。</p>
+<h2 id="4-点云的代码结构"><a href="#4-点云的代码结构" class="headerlink" title="4 点云的代码结构"></a>4 点云的代码结构</h2><p>这部分的代码组织个人感觉还是很好的，可以借鉴参考。</p>
+<p>首先根据两个方向的视场角和角度分辨率，可以得到图像的大小。这个size一般事先计算当做参数输入。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> N_SCAN = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> Horizon_SCAN = <span class="number">1800</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这里用了三个变量来存储结构化的点云，rangeMat，groundMat，fullCloud</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">cv::Mat rangeMat; <span class="comment">// range matrix for range image</span></span><br><span class="line">cv::Mat groundMat; <span class="comment">// ground matrix for ground cloud marking</span></span><br><span class="line">rangeMat  = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_32F, cv::Scalar::<span class="built_in">all</span>(FLT_MAX));</span><br><span class="line">groundMat = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_8S, cv::Scalar::<span class="built_in">all</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// projected velodyne raw cloud, but saved in the form of 1-D matrix</span></span><br><span class="line">pcl::PointCloud&lt;PointType&gt;::Ptr fullCloud; </span><br><span class="line">fullCloud-&gt;points.<span class="built_in">resize</span>(N_SCAN*Horizon_SCAN);</span><br><span class="line">std::<span class="built_in">fill</span>(fullCloud-&gt;points.<span class="built_in">begin</span>(), fullCloud-&gt;points.<span class="built_in">end</span>(), nanPoint);</span><br></pre></td></tr></table></figure>
+
+<p><code>rangeMat、groundMat</code> 为图像形式，分别存储距离值和是否地面点的标签。<code>fullCloud</code> 为 <code>pcl</code> 的点云格式，并且与图像格式一一对应，<code>fullCloud</code> 中 <code>index</code> 为：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// rowIdn       : point index of image row</span></span><br><span class="line"><span class="comment">/// columnIdn    : point index of image column</span></span><br><span class="line"><span class="comment">/// Horizon_SCAN : size of each image row</span></span><br><span class="line">index = columnIdn  + rowIdn * Horizon_SCAN;</span><br></pre></td></tr></table></figure>
+
+<p>如此对应，便于点云组织以及后续算法调用。</p>
+<p>以下是论文中特征提取的过程。</p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png" alt="image-20230701232141293"></p>
+]]></content>
+      <categories>
+        <category>激光雷达</category>
+        <category>lidar算法</category>
+        <category>地面分割</category>
+      </categories>
+      <tags>
+        <tag>lidar</tag>
+        <tag>地面分割</tag>
+        <tag>segmentation</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>LIOSAM 工程是怎么跑起来的</title>
     <url>/2023/07/06/2023-07-06-liosam-mapOpt-01/</url>
     <content><![CDATA[<p>liosam 工程是怎么跑起来的</p>
@@ -835,86 +915,6 @@
         <tag>SLAM</tag>
         <tag>LIOSAM</tag>
         <tag>后端优化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>地面分割算法（二）：Ground_removal in LeGO-LOAM</title>
-    <url>/2023/06/30/2023-06-30-segmentation-02/</url>
-    <content><![CDATA[<p>paper: <a href="https://ieeexplore.ieee.org/abstract/document/8594299">LeGO-LOAM: Lightweight and Ground-Optimized Lidar Odometry and Mapping on Variable Terrain</a></p>
-<p>Github: <a href="https://github.com/RobustFieldAutonomyLab/LeGO-LOAM">LeGO-LOAM - (RobustFieldAutonomyLab)</a></p>
-<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h2><p>在LeGO-LOAM中，Ground removal 部分引用了上文 <a href="https://miaomiao-w.github.io/posts/segmentation-01/">地面分割算法（一）：linefit_ground_segmentation</a> 中介绍的论文 <a href="https://ieeexplore.ieee.org/document/5548059/figures#figures">Fast segmentation of 3D point clouds for ground vehicles</a>，但只是用了其中考虑地面坡度的思想，具体的代码实现有非常大的区别，包括点云的结构化方式和具体的地面滤除实施，并且代码非常的简化精炼。</p>
-<p>Ground removal 部分的核心代码位于 LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp 文件中。 主要有两部分：点云结构化 <code>projectPointCloud()</code> 和地面滤除 <code>groundRemoval()</code>。</p>
-<h2 id="2-点云结构化"><a href="#2-点云结构化" class="headerlink" title="2 点云结构化"></a>2 点云结构化</h2><ul>
-<li><strong>主要原理</strong></li>
-</ul>
-<p>根据每个点的水平角度和垂直角度，再预先设置两个方向的角度分辨率，可计算得到每个点在这两个方向上的索引，将点云重新映射为基于图像的组织方式。</p>
-<p>核心代码所在：<code>LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</code></p>
-<ul>
-<li><strong>角度分辨率的设置</strong></li>
-</ul>
-<p>可以参考激光雷达设备手册上的参数，一般都有关于激光点云在水平和垂直两个方向上的角度分辨率，可直接将其作为我们需要的阈值，这样可以最大程度保证每个点都能有效利用。事实上，也可以通过这两个阈值的设置（给定一个更大的值，如2倍于设备本身的角度分辨率），在点云映射的同时达到降采样的目的，这个可以根据实际需求。</p>
-<p>源码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_x = <span class="number">0.2</span>; <span class="comment">// degree</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">float</span> ang_res_y = <span class="number">2.0</span>;</span><br></pre></td></tr></table></figure>
-
-
-
-<ul>
-<li><strong>计算水平角和垂直角</strong></li>
-</ul>
-<p>直接基于点坐标计算即可。垂直角$\theta_{v}$ ，水平角$\theta_{h}$ 。<br>$$<br>{\theta_{v}}<em>i&#x3D;\arctan{(\frac{z_i}{\sqrt{x_i^2+y_i^2}})} \\<br>{\theta</em>{h}}_i&#x3D;\arctan{(\frac{x_i}{y_i})}<br>$$<br>注：以上水平角公式是LeGO-LOAM中的计算方法，这个与坐标系定义和水平角起始方向选取有关。这里是以激光雷达坐标系的y轴正方向为0。这里用 $\arctan{(\frac{x_i}{y_i})}$ 还是 $\arctan{(\frac{y_i}{x_i})}$ 来计算依据实际需求而定。</p>
-<p>源码：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line"><span class="type">float</span> distance = <span class="built_in">sqrt</span>(thisPoint.x * thisPoint.x + thisPoint.y * thisPoint.y);</span><br><span class="line">verticalAngle = <span class="built_in">atan2</span>(thisPoint.z, distance) * <span class="number">180</span> / M_PI;</span><br><span class="line">horizonAngle = <span class="built_in">atan2</span>(thisPoint.x, thisPoint.y) * <span class="number">180</span> / M_PI;</span><br></pre></td></tr></table></figure>
-
-
-
-
-<ul>
-<li><strong>计算激光点在图像上的坐标</strong></li>
-</ul>
-<p>这个坐标也就是上述【主要原理】中所讲的索引值。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\src\imageProjection.cpp\projectPointCloud()</span></span><br><span class="line">rowIdn = (verticalAngle + ang_bottom) / ang_res_y;</span><br><span class="line">columnIdn = -<span class="built_in">round</span>((horizonAngle<span class="number">-90.0</span>)/ang_res_x) + Horizon_SCAN/<span class="number">2</span>;</span><br></pre></td></tr></table></figure>
-
-<p>这里的 <code>ang_bottom</code> 的引入和<code>-90.0</code>、<code>+ Horizon_SCAN/2</code> 都是为了将索引值转化为大于等于0的正整数，以符合图像中坐标的定义，也正是其所谓索引。</p>
-<p>特别地，如果是机械雷达，<code>rowIdn</code> 其实就是 <code>ring</code>，可以免去这部分的计算，直接将 <code>ring</code> 值赋给 <code>rowIdn</code> 即可。</p>
-<ul>
-<li><strong>举例说明</strong></li>
-</ul>
-<p>以机械雷达为例：</p>
-<p>图像行：每一线激光点就是图像中的一行点，并且图像中的任意一行的首尾其实也是相邻的，这点在后续的点云聚类中有体现（不在此文的地面点云分割范围）；</p>
-<p>图像列：下图中两圈表示机械雷达的两线点云，红框中是同一个方向的分属于两线的两个点，映射到图像中就是同一列中相邻的两个像素点。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png" alt="image-20230701184940252"></p>
-<h2 id="3-地面滤除"><a href="#3-地面滤除" class="headerlink" title="3 地面滤除"></a>3 地面滤除</h2><p>LeGO-LOAM中地面滤除算法非常简单。</p>
-<p>从靠近激光雷达的点开始判断。对于任意当前一点，再取出下一点（下一行中同一列的激光点），计算这两个点形成的坡度大小，再依据给定的坡度阈值（文中取值为10度），判断其是否为地面点。</p>
-<p>激光点是有可能有无效点的，没有收到回波的点一般存为Nan点，那么如果当前或者下一点是无效点，这个坡度值就没办法计算了，那么当前点就标记为 -1；</p>
-<p>对于正常的两个点，如果计算坡度小于阈值，则两点同为地面点，标记为 1；</p>
-<p>如果计算坡度大于阈值，则两点均为非地面点，标记为 0。</p>
-<p>结束了，就这么简单。</p>
-<p>可能会有人要问了，那如果是一个障碍物目标，它的上表面比较平整，不是就被误判为地面点了吗？</p>
-<p>是这样，肯定是有这个的概率的。但是本文的地面分割是为了更好地做后续的特征匹配的工作，这里不是为了做障碍物识别，所以这一点误判影响并不大；并且，这些误判点不一定会被识别为特征点，可以说又降低了其影响；再者，论文中的实验大多是周围是植被的环境，且安装位置也比较低，不太容易出现上面所说的这种情况。</p>
-<p>所以要注意，如果是用于自动驾驶的避障中，可能要多关注这个问题。特别是安装在巴士顶部的激光雷达，能够看到前车的顶部，特别是挂车后的拖挂平板这种，可能就漏掉了。这是需要注意的。</p>
-<h2 id="4-点云的代码结构"><a href="#4-点云的代码结构" class="headerlink" title="4 点云的代码结构"></a>4 点云的代码结构</h2><p>这部分的代码组织个人感觉还是很好的，可以借鉴参考。</p>
-<p>首先根据两个方向的视场角和角度分辨率，可以得到图像的大小。这个size一般事先计算当做参数输入。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// location: LeGO-LOAM\LeGO-LOAM\include\utility.h</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> N_SCAN = <span class="number">16</span>;</span><br><span class="line"><span class="keyword">extern</span> <span class="type">const</span> <span class="type">int</span> Horizon_SCAN = <span class="number">1800</span>;</span><br></pre></td></tr></table></figure>
-
-<p>这里用了三个变量来存储结构化的点云，rangeMat，groundMat，fullCloud</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">cv::Mat rangeMat; <span class="comment">// range matrix for range image</span></span><br><span class="line">cv::Mat groundMat; <span class="comment">// ground matrix for ground cloud marking</span></span><br><span class="line">rangeMat  = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_32F, cv::Scalar::<span class="built_in">all</span>(FLT_MAX));</span><br><span class="line">groundMat = cv::<span class="built_in">Mat</span>(N_SCAN, Horizon_SCAN, CV_8S, cv::Scalar::<span class="built_in">all</span>(<span class="number">0</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// projected velodyne raw cloud, but saved in the form of 1-D matrix</span></span><br><span class="line">pcl::PointCloud&lt;PointType&gt;::Ptr fullCloud; </span><br><span class="line">fullCloud-&gt;points.<span class="built_in">resize</span>(N_SCAN*Horizon_SCAN);</span><br><span class="line">std::<span class="built_in">fill</span>(fullCloud-&gt;points.<span class="built_in">begin</span>(), fullCloud-&gt;points.<span class="built_in">end</span>(), nanPoint);</span><br></pre></td></tr></table></figure>
-
-<p><code>rangeMat、groundMat</code> 为图像形式，分别存储距离值和是否地面点的标签。<code>fullCloud</code> 为 <code>pcl</code> 的点云格式，并且与图像格式一一对应，<code>fullCloud</code> 中 <code>index</code> 为：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// rowIdn       : point index of image row</span></span><br><span class="line"><span class="comment">/// columnIdn    : point index of image column</span></span><br><span class="line"><span class="comment">/// Horizon_SCAN : size of each image row</span></span><br><span class="line">index = columnIdn  + rowIdn * Horizon_SCAN;</span><br></pre></td></tr></table></figure>
-
-<p>如此对应，便于点云组织以及后续算法调用。</p>
-<p>以下是论文中特征提取的过程。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png" alt="image-20230701232141293"></p>
-]]></content>
-      <categories>
-        <category>激光雷达</category>
-        <category>lidar算法</category>
-        <category>地面分割</category>
-      </categories>
-      <tags>
-        <tag>lidar</tag>
-        <tag>地面分割</tag>
-        <tag>segmentation</tag>
       </tags>
   </entry>
   <entry>
