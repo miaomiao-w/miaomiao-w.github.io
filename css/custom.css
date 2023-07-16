@@ -17,7 +17,7 @@
 @media (min-width: 768px) {
   .outer,
   .wrap {
-    width: 55% !important;
+    width: 42% !important;
   }
 }
 @media (max-width: 768px) {
