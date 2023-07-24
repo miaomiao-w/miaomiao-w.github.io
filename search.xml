@@ -128,7 +128,7 @@
 <p>这时候，经过有序的组织，写下来之后，仿佛是完成了一个又一个任务，可以放诸脑后，可以 move on 了，有迹可循就不怕忘记它，也就可以光明正大的忘记它，倒是真正轻松了很多。</p>
 <p>这就像那个读书越读越薄的过程，占据的脑容量越来越小，不用想起，有可能是化成了另外一种形态。</p>
 <p>那么，这些书写和抒发应该，是在整装待发，是要轻装上阵。</p>
-<p><img src="/MD_IMG/2019-02-28-to-remember-or-not.assets/image-20230602220731398.png" alt="image-20230602220731398"></p>
+<p><img src="/MD_IMG/2019-02-28-to-remember-or-not.assets/image-20230602220731398.png"></p>
 ]]></content>
       <categories>
         <category>随笔</category>
@@ -840,23 +840,23 @@
     <content><![CDATA[<h2 id="0-写在前面"><a href="#0-写在前面" class="headerlink" title="0 写在前面"></a>0 写在前面</h2><p>这不是一个深入浅出的入门讲解。</p>
 <p>实在是因为本人苦于各种公式概念傻傻分不清楚，看了一遍一遍又边看边忘，想要时不时捋一捋。</p>
 <h2 id="1-条件概率与独立性"><a href="#1-条件概率与独立性" class="headerlink" title="1 条件概率与独立性"></a>1 条件概率与独立性</h2><p><strong>条件概率</strong>：设有两个事件 $A, B$, 而 $P(B)\neq{} 0$. 则“在给定 $B$ 发生的情况下 $A$ 发生的条件概率”，记为 $P(A\vert{}B)$，定义为</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200205028.png" alt="image-20230607200205028"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200205028.png"></p>
 <p><strong>独立</strong>：两个事件 $A, B$ 若满足 $P(AB) &#x3D; P(A)P(B)$，则称 $A, B$ 独立。</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200231761.png" alt="image-20230607200231761"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200231761.png"></p>
 <p><strong>概率乘法定理</strong>： 若干个独立事件之积的概率，等于各事件的概率之乘积，即：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200145134.png" alt="image-20230607200145134"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200145134.png"></p>
 <p><strong>全概率公式</strong>：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200133322.png" alt="image-20230607200133322"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200133322.png"></p>
 <p><strong>贝叶斯公式</strong>：在全概率公式的假定下，有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200340184.png" alt="image-20230607200340184"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200340184.png"></p>
 <h2 id="2-概率分布"><a href="#2-概率分布" class="headerlink" title="2 概率分布"></a>2 概率分布</h2><h3 id="2-1-离散型随机变量"><a href="#2-1-离散型随机变量" class="headerlink" title="2.1 离散型随机变量"></a>2.1 离散型随机变量</h3><p>需要区分概率分布与分布函数。</p>
 <p><strong>概率函数</strong>：</p>
 <p>概率函数（离散型） 设 <strong>X</strong> 为离散型随机变量，其全部可能值为{<em>a<del>1</del> , a<del>2</del> ,</em> ···}，则其概率函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607232744751.png" alt="image-20230607232744751"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607232744751.png"></p>
 <p>上式称为随机变量 <strong>X</strong> 的<strong>概率分布</strong>。</p>
 <p>概率分布，其实严格意义来说，应该叫做”<strong>离散型随机变量的值分布和概率分布</strong>“，强调分布。</p>
 <p><strong>概率分布函数</strong>：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607233026312.png" alt="image-20230607233026312"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607233026312.png"></p>
 <p><strong>伯努利分布（Bernoulli）</strong>：</p>
 <p>伯努利分布是关于布尔变量 $x\in {0,1}$ 的概率分布，其连续参数 $p \in [0,1]$ 表示变量 $x&#x3D;1$ 的概率。</p>
 <p>直观理解就是扔一次硬币，要不正面要不背面，如果是标准的硬币 p&#x3D;0.5 。</p>
@@ -864,39 +864,40 @@
 <p><strong>二项分布（Binomial）</strong>：</p>
 <p>二项分布就是重复 <em>n</em> 次独立的伯努利试验。</p>
 <p>若随机变量 X 的可能取值为0, 1, ···, n，且概率分布为</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234346009.png" alt="image-20230607234346009"></p>
-<p>则称 X 服从二项分布，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234452556.png" alt="image-20230607234452556"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234346009.png"></p>
+<p>则称 X 服从二项分布，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234452556.png"></p>
 <p>延展：泊松分布、超几何分布、负二项分布</p>
 <h3 id="2-2-连续型随机变量"><a href="#2-2-连续型随机变量" class="headerlink" title="2.2 连续型随机变量"></a>2.2 连续型随机变量</h3><p><strong>概率密度函数</strong>与<strong>分布函数</strong>:</p>
 <p>记分布函数为$F(x)$，记概率密度函数为$f(x)$，则有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235218630.png" alt="image-20230607235218630"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235218630.png"></p>
 <p>并且连续型概率密度函数有以下性质：</p>
-<p>（1） <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235435509.png" alt="image-20230607235435509"></p>
-<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235458144.png" alt="image-20230607235458144"></p>
+<p>（1） <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235435509.png"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235458144.png"></p>
 <p>（3）对于任何常数 <em>a &lt; b</em>，有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235536259.png" alt="image-20230607235536259"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235536259.png"></p>
 <p><strong>正态分布</strong>：</p>
-<p>正态随机变量 <strong>X</strong> ，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235838081.png" alt="image-20230607235838081"> </p>
+<p>正态随机变量 <strong>X</strong> ，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235838081.png"> </p>
 <p>概率密度函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235919576.png" alt="image-20230607235919576"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235919576.png"></p>
 <p><strong>标准正态分布</strong>：</p>
-<p>标准正态随机变量 <strong>X</strong> ，<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000039126.png" alt="image-20230608000039126"> </p>
+<p>标准正态随机变量 <strong>X</strong> ，<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000039126.png"> </p>
 <p>概率密度函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000117309.png" alt="image-20230608000117309"></p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000205752.png" alt="image-20230608000205752"> </p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000117309.png"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000205752.png"> </p>
 <p>延展：指数分布、均匀分布</p>
-<h2 id="3-多维随机变量"><a href="#3-多维随机变量" class="headerlink" title="3 多维随机变量"></a>3 多维随机变量</h2><h3 id="3-1-多维随机变量（随机向量）"><a href="#3-1-多维随机变量（随机向量）" class="headerlink" title="3.1 多维随机变量（随机向量）"></a>3.1 多维随机变量（随机向量）</h3><p><strong>n 维随机变</strong>：</p>
+<h2 id="3-多维随机变量"><a href="#3-多维随机变量" class="headerlink" title="3 多维随机变量"></a>3 多维随机变量</h2><h3 id="3-1-多维随机变量"><a href="#3-1-多维随机变量" class="headerlink" title="3.1 多维随机变量"></a>3.1 多维随机变量</h3><p><strong>n 维随机变量</strong>：</p>
+<p>多维随机变量也即随机向量。</p>
 <p>一般地，设 $X &#x3D; (X_1, X_2,  ··· , X_n)$ 为一个n 维向量，其每个分量都是一维随机变量。</p>
 <p><strong>【离散型】</strong>：</p>
 <p>以 ${a_{i1},a_{i2},}$记 $X_i$ 的全部可能值 $(i&#x3D;1,2,…)$ ，则事件 ${X_1&#x3D;a_{1j_1},\ …\ ,X_n&#x3D;a_{1nj_n},}$ 的概率</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234746142.png" alt="image-20230608234746142"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234746142.png"></p>
 <p>称为随机向量  $X &#x3D; (X_1, X_2,  ··· , X_n)$ 的概率函数或概率分布。</p>
 <p>概率函数满足的条件：</p>
-<p>（1）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234910580.png" alt="image-20230608234910580"></p>
-<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234926926.png" alt="image-20230608234926926"></p>
+<p>（1）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234910580.png"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234926926.png"></p>
 <p><strong>【连续型】</strong>：（？？）</p>
 <p>若$f(x_1,…,x_n)$ 是定义在 $\mathbb{R}^n$ 上的非负函数，使对 $\mathbb{R}^n$ 中的任意集合  $A$, 有</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608233817923.png" alt="image-20230608233817923"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608233817923.png"></p>
 <p>则称 $f$ 是 $X$ 的概率密度函数。</p>
 <p><strong>边缘分布和边缘概率密度</strong>：</p>
 <p> 边缘分布其实就是多维随机变量中的其中一维随机变量的分布函数。</p>
@@ -904,11 +905,11 @@
 <p>事实上，我们根据二维正态分布的概率密度，求出其边缘概率密度，发现边缘概率密度正是一维正态分布的的概率密度。</p>
 <p><strong>有关注意事项</strong>：<br>(1) 定义一维或者多维连续型随机变量时，实质都在于有概率密度函数存在。（有密度函数的随机变量）<br>(2) 连续型随机变量不能简单定义为“其各分量都是一维连续型随机变量的那种随机向量”。</p>
 <h3 id="3-2-二维正态分布"><a href="#3-2-二维正态分布" class="headerlink" title="3.2 二维正态分布"></a>3.2 二维正态分布</h3><p>概率密度函数：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235056886.png" alt="image-20230608235056886"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235056886.png"></p>
 <p>其中：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png" alt="image-20230608235128283"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png"></p>
 <p>记为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png" alt="image-20230608235219900"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png"></p>
 <h2 id="4-SLAM数学基础-系列笔记"><a href="#4-SLAM数学基础-系列笔记" class="headerlink" title="4 SLAM数学基础*系列笔记"></a>4 SLAM数学基础*系列笔记</h2><ul>
 <li><p><a href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
@@ -1046,7 +1047,7 @@
 <p>等式左边， $P(D\vert{}\theta)$ 其含义是在条件 $\theta$ 下观测到数据 $D$ 的概率，</p>
 <p>等式右边， $L(\theta\vert{}D)$ 其含义是当已有观测数据 $D$ ，模型参数 $\theta$ 的似然。</p>
 <p>为什么是这样呢？回顾似然函数的定义：</p>
-<p><img src="/MD_IMG/2023-06-19-MAP.assets/image-20230620223556799.png" alt="image-20230620223556799"></p>
+<p><img src="/MD_IMG/2023-06-19-MAP.assets/image-20230620223556799.png"></p>
 <p>所以事实上，我们这里说到的联合概率，以及前面的条件概率 $P(D\vert{}\theta)$ ，似然 $L(\theta\vert{}D)$ ，都是指同一个东西，形式上都是：</p>
 <p>$$<br>p(x_1;\theta)p(x_2;\theta)…p(x_n;\theta)&#x3D;\prod_{i&#x3D;1}^n{p(x_i;\theta)}<br>$$</p>
 <p>只不过，当模型参数 $\theta$ 已知时，它一般用来描述事件发生的概率，此时表述为条件概率或联合概率密度，着眼于“概率”；当模型参数 $\theta$ 未知时，这个式子一般就是用来估计模型参数 $\theta$ 的，此时被称为似然函数，是关于模型参数 $\theta$ 的函数，参数 $\theta$ 的估计方法一般有极大似然估计或最大后验估计（这两种方法也是频率学派和贝叶斯学派各自思想主张的具体体现之一，如果有时间再来总结对比吧）。</p>
@@ -1179,9 +1180,9 @@
 <li>对于每个三维点 $P(x,y,z)$ ，平面坐标用极坐标方式表示 $P(r,\theta,z)$ ，由于每个$Segment$ 内的点被认为角度一样，于是每个$Segment$ 内角度可以忽略，用二维点 $P(r,z)$ 表示，其中 $r&#x3D;\sqrt{x^2+y^2}$ ，相当于降维。</li>
 <li>计算每个 $Bin$ 内的最低点 $MinZPoint(d,z)$ 。</li>
 </ul>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230623225410411.png" alt="image-20230623225410411"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230623225410411.png"></p>
 <h2 id="3-地面线段拟合"><a href="#3-地面线段拟合" class="headerlink" title="3 地面线段拟合"></a>3 地面线段拟合</h2><h3 id="3-1-流程图"><a href="#3-1-流程图" class="headerlink" title="3.1 流程图"></a>3.1 流程图</h3><p>根据每个 $Bin$ 的最低点拟合地面线段 $GroundLine$ ，其论文理论部分相对简单，但代码逻辑相对复杂一些，原论文中的算法伪代码如下：</p>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624172909256.png" alt="image-20230624172909256"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624172909256.png"></p>
 <p>为更好地理解算法逻辑，下面为依据代码所做的流程图。提前进行如下说明：</p>
 <table>
 <thead>
@@ -1233,7 +1234,7 @@
 <li>满足什么条件的点可以用来拟合地面线段？</li>
 <li>什么条件下，地面线需要中断并重新开启一条线段（以符合不同坡度的地面情况）？</li>
 </ul>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624004950917.png" alt="image-20230624004950917"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624004950917.png"></p>
 <p>以上流程中，同一颜色的框图代表相同或相近的含义：</p>
 <ul>
 <li>蓝：开始或转入一次循环；</li>
@@ -1273,7 +1274,7 @@
 <li><strong>if curBinPoint valid ?</strong></li>
 </ul>
 <p>对应上述伪代码为第15行：</p>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624200223441.png" alt="image-20230624200223441"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624200223441.png"></p>
 <p>源代码为（linefit_ground_segmentation&#x2F;src&#x2F;segment.cc: Line 69）：</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Not enough points. // Add point if valid.</span></span><br><span class="line"><span class="keyword">if</span> (cur_point.d - current_line_points.<span class="built_in">back</span>().d &lt; long_threshold_ &amp;&amp;</span><br><span class="line">    std::<span class="built_in">fabs</span>(current_line_points.<span class="built_in">back</span>().z - cur_ground_height) &lt; max_start_height_) &#123;</span><br><span class="line">    current_line_points.<span class="built_in">push_back</span>(cur_point);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1284,7 +1285,7 @@
 <li><strong>if localLine good ?</strong></li>
 </ul>
 <p>对应上述伪代码为第6行：</p>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624201240126.png" alt="image-20230624201240126"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230624201240126.png"></p>
 <p>源代码为（linefit_ground_segmentation&#x2F;src&#x2F;segment.cc: Line 47）：</p>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (error &gt; max_error_ ||</span><br><span class="line">    std::<span class="built_in">fabs</span>(cur_line.first) &gt; max_slope_ ||</span><br><span class="line">    (current_line_points.<span class="built_in">size</span>() &gt; <span class="number">2</span> &amp;&amp; std::<span class="built_in">fabs</span>(cur_line.first) &lt; min_slope_) ||</span><br><span class="line">    is_long_line &amp;&amp; std::<span class="built_in">fabs</span>(expected_z - cur_point.z) &gt; max_long_height_) &#123;</span><br><span class="line">    current_line_points.<span class="built_in">pop_back</span>();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1327,7 +1328,7 @@
 
 
 <h2 id="6-效果展示"><a href="#6-效果展示" class="headerlink" title="6 效果展示"></a>6 效果展示</h2><p>论文中的效果展示：</p>
-<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230701232839694.png" alt="image-20230701232839694"></p>
+<p><img src="/MD_IMG/2023-06-23-segmentation-01.assets/image-20230701232839694.png"></p>
 <h2 id="7-其他"><a href="#7-其他" class="headerlink" title="7 其他"></a>7 其他</h2><p>博文 <a href="https://blog.csdn.net/lovelyaiq/article/details/118826534">地面分割：Fast Segmentation of 3D Point Clouds for Ground Vehicles_TiRan_Yang的博客</a> 中举了一个实例，对代码进行了解读，可参看。</p>
 ]]></content>
       <categories>
@@ -1386,7 +1387,7 @@
 <p>以机械雷达为例：</p>
 <p>图像行：每一线激光点就是图像中的一行点，并且图像中的任意一行的首尾其实也是相邻的，这点在后续的点云聚类中有体现（不在此文的地面点云分割范围）；</p>
 <p>图像列：下图中两圈表示机械雷达的两线点云，红框中是同一个方向的分属于两线的两个点，映射到图像中就是同一列中相邻的两个像素点。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png" alt="image-20230701184940252"></p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701184940252.png"></p>
 <h2 id="3-地面滤除"><a href="#3-地面滤除" class="headerlink" title="3 地面滤除"></a>3 地面滤除</h2><p>LeGO-LOAM中地面滤除算法非常简单。</p>
 <p>从靠近激光雷达的点开始判断。对于任意当前一点，再取出下一点（下一行中同一列的激光点），计算这两个点形成的坡度大小，再依据给定的坡度阈值（文中取值为10度），判断其是否为地面点。</p>
 <p>激光点是有可能有无效点的，没有收到回波的点一般存为Nan点，那么如果当前或者下一点是无效点，这个坡度值就没办法计算了，那么当前点就标记为 -1；</p>
@@ -1408,7 +1409,7 @@
 
 <p>如此对应，便于点云组织以及后续算法调用。</p>
 <p>以下是论文中特征提取的过程。</p>
-<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png" alt="image-20230701232141293"></p>
+<p><img src="/MD_IMG/2023-06-30-segmentation-02.assets/image-20230701232141293.png"></p>
 ]]></content>
       <categories>
         <category>激光雷达</category>

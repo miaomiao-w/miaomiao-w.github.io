@@ -97,23 +97,23 @@
   <h2 id="0-写在前面"><a href="#0-写在前面" class="headerlink" title="0 写在前面"></a>0 写在前面</h2><p>这不是一个深入浅出的入门讲解。</p>
 <p>实在是因为本人苦于各种公式概念傻傻分不清楚，看了一遍一遍又边看边忘，想要时不时捋一捋。</p>
 <h2 id="1-条件概率与独立性"><a href="#1-条件概率与独立性" class="headerlink" title="1 条件概率与独立性"></a>1 条件概率与独立性</h2><p><strong>条件概率</strong>：设有两个事件 $A, B$, 而 $P(B)\neq{} 0$. 则“在给定 $B$ 发生的情况下 $A$ 发生的条件概率”，记为 $P(A\vert{}B)$，定义为</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200205028.png" alt="image-20230607200205028"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200205028.png"></p>
 <p><strong>独立</strong>：两个事件 $A, B$ 若满足 $P(AB) &#x3D; P(A)P(B)$，则称 $A, B$ 独立。</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200231761.png" alt="image-20230607200231761"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200231761.png"></p>
 <p><strong>概率乘法定理</strong>： 若干个独立事件之积的概率，等于各事件的概率之乘积，即：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200145134.png" alt="image-20230607200145134"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200145134.png"></p>
 <p><strong>全概率公式</strong>：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200133322.png" alt="image-20230607200133322"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200133322.png"></p>
 <p><strong>贝叶斯公式</strong>：在全概率公式的假定下，有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200340184.png" alt="image-20230607200340184"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607200340184.png"></p>
 <h2 id="2-概率分布"><a href="#2-概率分布" class="headerlink" title="2 概率分布"></a>2 概率分布</h2><h3 id="2-1-离散型随机变量"><a href="#2-1-离散型随机变量" class="headerlink" title="2.1 离散型随机变量"></a>2.1 离散型随机变量</h3><p>需要区分概率分布与分布函数。</p>
 <p><strong>概率函数</strong>：</p>
 <p>概率函数（离散型） 设 <strong>X</strong> 为离散型随机变量，其全部可能值为{<em>a<del>1</del> , a<del>2</del> ,</em> ···}，则其概率函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607232744751.png" alt="image-20230607232744751"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607232744751.png"></p>
 <p>上式称为随机变量 <strong>X</strong> 的<strong>概率分布</strong>。</p>
 <p>概率分布，其实严格意义来说，应该叫做”<strong>离散型随机变量的值分布和概率分布</strong>“，强调分布。</p>
 <p><strong>概率分布函数</strong>：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607233026312.png" alt="image-20230607233026312"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607233026312.png"></p>
 <p><strong>伯努利分布（Bernoulli）</strong>：</p>
 <p>伯努利分布是关于布尔变量 $x\in {0,1}$ 的概率分布，其连续参数 $p \in [0,1]$ 表示变量 $x&#x3D;1$ 的概率。</p>
 <p>直观理解就是扔一次硬币，要不正面要不背面，如果是标准的硬币 p&#x3D;0.5 。</p>
@@ -121,39 +121,40 @@
 <p><strong>二项分布（Binomial）</strong>：</p>
 <p>二项分布就是重复 <em>n</em> 次独立的伯努利试验。</p>
 <p>若随机变量 X 的可能取值为0, 1, ···, n，且概率分布为</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234346009.png" alt="image-20230607234346009"></p>
-<p>则称 X 服从二项分布，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234452556.png" alt="image-20230607234452556"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234346009.png"></p>
+<p>则称 X 服从二项分布，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607234452556.png"></p>
 <p>延展：泊松分布、超几何分布、负二项分布</p>
 <h3 id="2-2-连续型随机变量"><a href="#2-2-连续型随机变量" class="headerlink" title="2.2 连续型随机变量"></a>2.2 连续型随机变量</h3><p><strong>概率密度函数</strong>与<strong>分布函数</strong>:</p>
 <p>记分布函数为$F(x)$，记概率密度函数为$f(x)$，则有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235218630.png" alt="image-20230607235218630"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235218630.png"></p>
 <p>并且连续型概率密度函数有以下性质：</p>
-<p>（1） <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235435509.png" alt="image-20230607235435509"></p>
-<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235458144.png" alt="image-20230607235458144"></p>
+<p>（1） <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235435509.png"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235458144.png"></p>
 <p>（3）对于任何常数 <em>a &lt; b</em>，有：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235536259.png" alt="image-20230607235536259"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235536259.png"></p>
 <p><strong>正态分布</strong>：</p>
-<p>正态随机变量 <strong>X</strong> ，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235838081.png" alt="image-20230607235838081"> </p>
+<p>正态随机变量 <strong>X</strong> ，记为 <img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235838081.png"> </p>
 <p>概率密度函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235919576.png" alt="image-20230607235919576"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230607235919576.png"></p>
 <p><strong>标准正态分布</strong>：</p>
-<p>标准正态随机变量 <strong>X</strong> ，<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000039126.png" alt="image-20230608000039126"> </p>
+<p>标准正态随机变量 <strong>X</strong> ，<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000039126.png"> </p>
 <p>概率密度函数为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000117309.png" alt="image-20230608000117309"></p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000205752.png" alt="image-20230608000205752"> </p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000117309.png"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608000205752.png"> </p>
 <p>延展：指数分布、均匀分布</p>
-<h2 id="3-多维随机变量"><a href="#3-多维随机变量" class="headerlink" title="3 多维随机变量"></a>3 多维随机变量</h2><h3 id="3-1-多维随机变量（随机向量）"><a href="#3-1-多维随机变量（随机向量）" class="headerlink" title="3.1 多维随机变量（随机向量）"></a>3.1 多维随机变量（随机向量）</h3><p><strong>n 维随机变</strong>：</p>
+<h2 id="3-多维随机变量"><a href="#3-多维随机变量" class="headerlink" title="3 多维随机变量"></a>3 多维随机变量</h2><h3 id="3-1-多维随机变量"><a href="#3-1-多维随机变量" class="headerlink" title="3.1 多维随机变量"></a>3.1 多维随机变量</h3><p><strong>n 维随机变量</strong>：</p>
+<p>多维随机变量也即随机向量。</p>
 <p>一般地，设 $X &#x3D; (X_1, X_2,  ··· , X_n)$ 为一个n 维向量，其每个分量都是一维随机变量。</p>
 <p><strong>【离散型】</strong>：</p>
 <p>以 ${a_{i1},a_{i2},}$记 $X_i$ 的全部可能值 $(i&#x3D;1,2,…)$ ，则事件 ${X_1&#x3D;a_{1j_1},\ …\ ,X_n&#x3D;a_{1nj_n},}$ 的概率</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234746142.png" alt="image-20230608234746142"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234746142.png"></p>
 <p>称为随机向量  $X &#x3D; (X_1, X_2,  ··· , X_n)$ 的概率函数或概率分布。</p>
 <p>概率函数满足的条件：</p>
-<p>（1）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234910580.png" alt="image-20230608234910580"></p>
-<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234926926.png" alt="image-20230608234926926"></p>
+<p>（1）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234910580.png"></p>
+<p>（2）<img src="/MD_IMG/2023-06-07-probability.assets/image-20230608234926926.png"></p>
 <p><strong>【连续型】</strong>：（？？）</p>
 <p>若$f(x_1,…,x_n)$ 是定义在 $\mathbb{R}^n$ 上的非负函数，使对 $\mathbb{R}^n$ 中的任意集合  $A$, 有</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608233817923.png" alt="image-20230608233817923"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608233817923.png"></p>
 <p>则称 $f$ 是 $X$ 的概率密度函数。</p>
 <p><strong>边缘分布和边缘概率密度</strong>：</p>
 <p> 边缘分布其实就是多维随机变量中的其中一维随机变量的分布函数。</p>
@@ -161,11 +162,11 @@
 <p>事实上，我们根据二维正态分布的概率密度，求出其边缘概率密度，发现边缘概率密度正是一维正态分布的的概率密度。</p>
 <p><strong>有关注意事项</strong>：<br>(1) 定义一维或者多维连续型随机变量时，实质都在于有概率密度函数存在。（有密度函数的随机变量）<br>(2) 连续型随机变量不能简单定义为“其各分量都是一维连续型随机变量的那种随机向量”。</p>
 <h3 id="3-2-二维正态分布"><a href="#3-2-二维正态分布" class="headerlink" title="3.2 二维正态分布"></a>3.2 二维正态分布</h3><p>概率密度函数：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235056886.png" alt="image-20230608235056886"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235056886.png"></p>
 <p>其中：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png" alt="image-20230608235128283"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235128283.png"></p>
 <p>记为：</p>
-<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png" alt="image-20230608235219900"></p>
+<p><img src="/MD_IMG/2023-06-07-probability.assets/image-20230608235219900.png"></p>
 <h2 id="4-SLAM数学基础-系列笔记"><a href="#4-SLAM数学基础-系列笔记" class="headerlink" title="4 SLAM数学基础*系列笔记"></a>4 SLAM数学基础*系列笔记</h2><ul>
 <li><p><a target="_blank" rel="noopener" href="https://miaomiao-w.github.io/2023/06/04/2023-06-04-vector/">SLAM数学基础（一）：向量与矩阵</a></p>
 </li>
